@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5F5F5">
+
+    <TextView
+        android:id="@+id/tvJudul"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Data Siswa"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:textColor="#333"
+        android:paddingBottom="16dp" />
+
+    <Button
+        android:id="@+id/btnTambahSiswa"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tambah Siswa"
+        android:layout_gravity="end"
+        android:layout_marginBottom="12dp" />
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="horizontal">
+
+        <TableLayout
+            android:id="@+id/tableSiswa"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:stretchColumns="*"
+            android:background="@android:color/white"
+            android:elevation="4dp"
+            android:padding="8dp" />
+    </HorizontalScrollView>
+</LinearLayout>

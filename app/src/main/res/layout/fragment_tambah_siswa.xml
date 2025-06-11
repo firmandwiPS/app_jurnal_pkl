@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/etNis"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="NIS"
+            android:inputType="number" />
+
+        <EditText
+            android:id="@+id/etNama"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Nama Siswa"
+            android:inputType="textPersonName"
+            android:layout_marginTop="8dp" />
+
+        <EditText
+            android:id="@+id/etJK"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Jenis Kelamin"
+            android:inputType="text"
+            android:layout_marginTop="8dp" />
+
+        <EditText
+            android:id="@+id/etAsal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Asal Sekolah"
+            android:inputType="text"
+            android:layout_marginTop="8dp" />
+
+        <EditText
+            android:id="@+id/etMulai"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Tanggal Mulai (yyyy-MM-dd)"
+            android:inputType="date"
+            android:layout_marginTop="8dp" />
+
+        <EditText
+            android:id="@+id/etSelesai"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Tanggal Selesai (yyyy-MM-dd)"
+            android:inputType="date"
+            android:layout_marginTop="8dp" />
+
+        <EditText
+            android:id="@+id/etHP"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="No HP"
+            android:inputType="phone"
+            android:layout_marginTop="8dp" />
+
+        <EditText
+            android:id="@+id/etAlamat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Alamat"
+            android:inputType="textMultiLine"
+            android:lines="3"
+            android:gravity="top"
+            android:layout_marginTop="8dp" />
+
+        <Button
+            android:id="@+id/btnSimpan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Simpan"
+            android:layout_marginTop="16dp" />
+    </LinearLayout>
+</ScrollView>
