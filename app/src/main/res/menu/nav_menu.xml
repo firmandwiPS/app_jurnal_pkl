@@ -20,26 +20,26 @@
         <item
             android:id="@+id/siswa"
             android:icon="@drawable/siswa"
-            android:title="Siswa"
+            android:title="Data Siswa"
             />
 
 
         <item
             android:id="@+id/jurnal"
             android:icon="@drawable/jurnal"
-            android:title="Jurnal"
+            android:title="Data Jurnal"
             />
 
         <item
             android:id="@+id/presensi"
             android:icon="@drawable/presensi"
-            android:title="Presensi"
+            android:title="Data Presensi"
             />
 
         <item
             android:id="@+id/laporan_pkl"
             android:icon="@drawable/laporan_pkl"
-            android:title="Laporan PKL"
+            android:title="Data Laporan PKL"
             />
 
     </group>

@@ -1,59 +1,125 @@
 package com.ioreum.app_jurnal_pkl
 
 import android.os.Bundle
+import android.util.Log
+import android.view.*
+import android.widget.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.Volley
+import com.bumptech.glide.Glide
+import org.json.JSONArray
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [JurnalFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class JurnalFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+    private lateinit var tableJurnal: TableLayout
+    private lateinit var btnTambah: Button
+    private val urlTampilJurnal = "http://192.168.36.139/jurnal_pkl/tampil_jurnal.php"
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_jurnal, container, false)
+        val view = inflater.inflate(R.layout.fragment_jurnal, container, false)
+        tableJurnal = view.findViewById(R.id.tableJurnal)
+        btnTambah = view.findViewById(R.id.btnTambahJurnal)
+
+        // Tombol Tambah
+        btnTambah.setOnClickListener {
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, TambahJurnalFragment())
+                .addToBackStack(null)
+                .commit()
+        }
+
+        tampilkanHeader()
+        loadDataJurnal()
+
+        return view
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment JurnalFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            JurnalFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
+    private fun tampilkanHeader() {
+        val row = TableRow(requireContext())
+        val headers = listOf("No", "NIS", "Nama", "Tanggal", "Uraian", "Catatan", "Paraf")
+        headers.forEach {
+            val tv = TextView(requireContext()).apply {
+                text = it
+                setPadding(16, 12, 16, 12)
+                setTextColor(0xFF000000.toInt())
+                textAlignment = View.TEXT_ALIGNMENT_CENTER
+                setTypeface(null, android.graphics.Typeface.BOLD)
             }
+            row.addView(tv)
+        }
+        tableJurnal.addView(row)
+    }
+
+    private fun loadDataJurnal() {
+        val request = StringRequest(urlTampilJurnal, { response ->
+            try {
+                val array = JSONArray(response)
+
+                for (i in 0 until array.length()) {
+                    val obj = array.getJSONObject(i)
+                    val row = TableRow(requireContext())
+
+                    val no = (i + 1).toString()
+                    val nis = obj.getString("nis")
+                    val nama = obj.getString("nama_siswa")
+                    val tanggal = obj.getString("tanggal_kegiatan")
+                    val uraian = obj.getString("uraian_kegiatan")
+                    val catatan = obj.getString("catatan_pembimbing")
+                    val fotoParaf = obj.getString("paraf_pembimbing")
+
+                    val dataTeks = listOf(no, nis, nama, tanggal, uraian, catatan)
+
+                    dataTeks.forEach {
+                        val tv = TextView(requireContext()).apply {
+                            text = it
+                            setPadding(16, 12, 16, 12)
+                            gravity = Gravity.CENTER  // Menengahkan isi teks
+                            textAlignment = View.TEXT_ALIGNMENT_CENTER  // Tambahan (optional)
+                            setTextColor(0xFF000000.toInt())
+                            layoutParams = TableRow.LayoutParams(
+                                TableRow.LayoutParams.WRAP_CONTENT,
+                                TableRow.LayoutParams.WRAP_CONTENT
+                            ).apply {
+                                gravity = Gravity.CENTER  // Menengahkan TextView di dalam TableRow
+                            }
+                        }
+                        row.addView(tv)
+                    }
+
+                    // ImageView untuk foto paraf
+                    val imageView = ImageView(requireContext()).apply {
+                        layoutParams = TableRow.LayoutParams(200, 200)
+                        scaleType = ImageView.ScaleType.CENTER_CROP
+                    }
+
+                    if (fotoParaf.isNotEmpty()) {
+                        val urlFoto = "http://192.168.36.139/jurnal_pkl/foto/$fotoParaf"
+                        Log.d("JurnalFragment", "Load image URL: $urlFoto")
+                        Glide.with(this)
+                            .load(urlFoto)
+                            .placeholder(R.drawable.placeholder)
+                            .error(R.drawable.error_image)
+                            .into(imageView)
+                    } else {
+                        // Jika tidak ada foto, tampilkan placeholder
+                        imageView.setImageResource(R.drawable.placeholder)
+                    }
+
+                    row.addView(imageView)
+                    tableJurnal.addView(row)
+                }
+            } catch (e: Exception) {
+                Toast.makeText(requireContext(), "Gagal parsing data", Toast.LENGTH_SHORT).show()
+                e.printStackTrace()
+            }
+        }, {
+            Toast.makeText(requireContext(), "Gagal memuat data jurnal", Toast.LENGTH_SHORT).show()
+        })
+
+        Volley.newRequestQueue(requireContext()).add(request)
     }
 }
