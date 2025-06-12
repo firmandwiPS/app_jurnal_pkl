@@ -2,6 +2,7 @@ Tugas project SMK Cibitung 1
 Judul:  Aplikasi  Android Jurnal Kegiatan PKL Siswa di Lab PPLG BBPPMPV BMTI 
 
 Buat database jurnal PKl terdiri dari beberapa tabel sbb:
+
 -Tabel siswa : nis, nama siswa, jenis kelamin, asal sekolah, tangal mulai, tanggal selesai, no hp, alamat.
 
 -Tabel jurnal : nis, tanggal_kegiatan, uraian_kegiatan, catatan pembimbing, paraf_pembimbing.
