@@ -1,26 +1,30 @@
 package com.ioreum.app_jurnal_pkl
 
+import android.app.DatePickerDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
-import org.json.JSONException
-import org.json.JSONObject
+import java.util.*
 
 class Tambah_siswaFragment : Fragment() {
 
     private lateinit var etNis: EditText
     private lateinit var etNama: EditText
-    private lateinit var etJK: EditText
+    private lateinit var spinnerJK: Spinner
     private lateinit var etAsal: EditText
     private lateinit var etMulai: EditText
     private lateinit var etSelesai: EditText
     private lateinit var etHP: EditText
     private lateinit var etAlamat: EditText
     private lateinit var btnSimpan: Button
+    private lateinit var btnKembali: ImageButton
+
+    private var selectedJK: String = "LAKI-LAKI"
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -28,15 +32,22 @@ class Tambah_siswaFragment : Fragment() {
     ): View {
         val view = inflater.inflate(R.layout.fragment_tambah_siswa, container, false)
 
+        // Inisialisasi view
         etNis = view.findViewById(R.id.etNis)
         etNama = view.findViewById(R.id.etNama)
-        etJK = view.findViewById(R.id.etJK)
+        spinnerJK = view.findViewById(R.id.spinnerJK)
         etAsal = view.findViewById(R.id.etAsal)
         etMulai = view.findViewById(R.id.etMulai)
         etSelesai = view.findViewById(R.id.etSelesai)
         etHP = view.findViewById(R.id.etHP)
         etAlamat = view.findViewById(R.id.etAlamat)
         btnSimpan = view.findViewById(R.id.btnSimpan)
+        btnKembali = view.findViewById(R.id.btnKembali)
+
+        // Setup
+        setupSpinner()
+        setupDatePicker(etMulai)
+        setupDatePicker(etSelesai)
 
         btnSimpan.setOnClickListener {
             if (validasiInput()) {
@@ -44,14 +55,46 @@ class Tambah_siswaFragment : Fragment() {
             }
         }
 
+        btnKembali.setOnClickListener {
+            parentFragmentManager.popBackStack()
+        }
+
         return view
+    }
+
+    private fun setupSpinner() {
+        val jenisKelamin = listOf("LAKI-LAKI", "PEREMPUAN")
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, jenisKelamin)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinnerJK.adapter = adapter
+
+        spinnerJK.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                selectedJK = jenisKelamin[position]
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+    }
+
+    private fun setupDatePicker(editText: EditText) {
+        editText.setOnClickListener {
+            val calendar = Calendar.getInstance()
+            val year = calendar.get(Calendar.YEAR)
+            val month = calendar.get(Calendar.MONTH)
+            val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+            DatePickerDialog(requireContext(), { _, y, m, d ->
+                val date = "$y-${String.format("%02d", m + 1)}-${String.format("%02d", d)}"
+                editText.setText(date)
+            }, year, month, day).show()
+        }
     }
 
     private fun validasiInput(): Boolean {
         val inputs = listOf(
             Pair(etNis, "NIS wajib diisi"),
             Pair(etNama, "Nama wajib diisi"),
-            Pair(etJK, "Jenis kelamin wajib diisi"),
             Pair(etAsal, "Asal sekolah wajib diisi"),
             Pair(etMulai, "Tanggal mulai wajib diisi"),
             Pair(etSelesai, "Tanggal selesai wajib diisi"),
@@ -70,31 +113,26 @@ class Tambah_siswaFragment : Fragment() {
     }
 
     private fun simpanData() {
-        val url = "http://192.168.36.189/jurnal_pkl/tambah_siswa.php" // ganti IP jika perlu
+        val url = "http://192.168.36.139/jurnal_pkl/tambah_siswa.php"
 
         val stringRequest = object : StringRequest(Method.POST, url,
             { response ->
-                try {
-                    val obj = JSONObject(response)
-                    if (obj.getString("status") == "success") {
-                        Toast.makeText(requireContext(), "Data berhasil ditambahkan", Toast.LENGTH_SHORT).show()
-                        setFragmentResult("refreshSiswa", Bundle())
-                        requireActivity().supportFragmentManager.popBackStack()
-                    } else {
-                        Toast.makeText(requireContext(), "Gagal tambah data: ${obj.optString("message")}", Toast.LENGTH_SHORT).show()
-                    }
-                } catch (e: JSONException) {
-                    Toast.makeText(requireContext(), "Error parsing response", Toast.LENGTH_SHORT).show()
-                }
+                Log.d("TambahSiswa", "Response: $response")
+                Toast.makeText(requireContext(), "✅ Data berhasil ditambahkan", Toast.LENGTH_SHORT).show()
+
+                setFragmentResult("refreshSiswa", Bundle())
+                parentFragmentManager.popBackStack()
             },
             { error ->
-                Toast.makeText(requireContext(), "Gagal koneksi: ${error.message}", Toast.LENGTH_SHORT).show()
+                Log.e("TambahSiswa", "Volley Error: ${error.message}")
+                Toast.makeText(requireContext(), "❌ Gagal koneksi: ${error.message}", Toast.LENGTH_LONG).show()
             }) {
+
             override fun getParams(): MutableMap<String, String> {
                 return hashMapOf(
                     "nis" to etNis.text.toString(),
                     "nama_siswa" to etNama.text.toString(),
-                    "jenis_kelamin" to etJK.text.toString(),
+                    "jenis_kelamin" to selectedJK,
                     "asal_sekolah" to etAsal.text.toString(),
                     "tanggal_mulai" to etMulai.text.toString(),
                     "tanggal_selesai" to etSelesai.text.toString(),

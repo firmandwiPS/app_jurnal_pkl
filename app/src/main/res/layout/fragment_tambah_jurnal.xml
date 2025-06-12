@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:orientation="vertical" android:padding="16dp">
+
+        <Spinner
+            android:id="@+id/spinnerNis"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:prompt="@string/pilih_nis"/>
+
+        <EditText
+            android:id="@+id/editTanggal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Tanggal Kegiatan"
+            android:focusable="false"/>
+
+        <EditText
+            android:id="@+id/editUraian"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Uraian Kegiatan" />
+
+        <EditText
+            android:id="@+id/editCatatan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Catatan Pembimbing" />
+
+        <ImageView
+            android:id="@+id/imagePreview"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:scaleType="centerCrop"
+            android:layout_marginTop="12dp"
+            android:background="#CCC"/>
+
+        <Button
+            android:id="@+id/btnPilihFoto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pilih Foto Paraf" />
+
+        <Button
+            android:id="@+id/btnSimpan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Simpan Data Jurnal"
+            android:layout_marginTop="16dp"/>
+    </LinearLayout>
+</ScrollView>
