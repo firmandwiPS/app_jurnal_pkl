@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.*
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
@@ -42,7 +43,7 @@ class JurnalFragment : Fragment() {
 
     private fun tampilkanHeader() {
         val row = TableRow(requireContext())
-        val headers = listOf("No", "NIS", "Nama", "Tanggal", "Uraian", "Catatan", "Paraf", "Aksi")
+        val headers = listOf("No", "NIS", "Nama", "Tanggal Kegiatan ", "Uraian Kegiatan", "Catatan Pembimbing", "Paraf Pembimbing", "Aksi")
         headers.forEach {
             val tv = TextView(requireContext()).apply {
                 text = it
@@ -75,7 +76,6 @@ class JurnalFragment : Fragment() {
                     val fotoParaf = obj.getString("paraf_pembimbing")
 
                     val dataTeks = listOf((i + 1).toString(), nis, nama, tanggal, uraian, catatan)
-
                     dataTeks.forEach {
                         val tv = TextView(requireContext()).apply {
                             text = it
@@ -97,8 +97,10 @@ class JurnalFragment : Fragment() {
 
 
                     val imageView = ImageView(requireContext()).apply {
-                        layoutParams = TableRow.LayoutParams(200, 200)
-                        scaleType = ImageView.ScaleType.CENTER_CROP
+                        layoutParams = TableRow.LayoutParams(300, 300)
+                        scaleType = ImageView.ScaleType.FIT_CENTER  // Gambar tampil utuh
+                        adjustViewBounds = true
+                        setPadding(8, 8, 8, 8) // Opsional: beri padding supaya tidak nempel
                     }
 
                     if (fotoParaf.isNotEmpty()) {
@@ -117,24 +119,105 @@ class JurnalFragment : Fragment() {
                     val btnHapus = Button(requireContext()).apply {
                         text = "Hapus"
                         textSize = 12f
+                        layoutParams = LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT
+                        ).apply {
+                            gravity = Gravity.CENTER_HORIZONTAL  // tombol akan berada di tengah horizontal
+                            topMargin = 8
+                            bottomMargin = 8
+                        }
+
                         setOnClickListener {
-                            AlertDialog.Builder(requireContext())
+                            val alertDialog = AlertDialog.Builder(requireContext())
                                 .setTitle("Konfirmasi")
-                                .setMessage("Yakin ingin menghapus jurnal ID: $idJurnal?")
-                                .setPositiveButton("Ya") { _, _ ->
-                                    hapusJurnal(idJurnal)
+                                .setMessage("Yakin ingin menghapus jurnal ini?")
+                                .setPositiveButton("Ya") { dialog, _ ->
+                                    if (idJurnal.isNotEmpty()) {
+                                        hapusJurnal(idJurnal)
+                                    } else {
+                                        Toast.makeText(requireContext(), "ID jurnal tidak valid!", Toast.LENGTH_SHORT).show()
+                                    }
+                                    dialog.dismiss()
                                 }
-                                .setNegativeButton("Batal", null)
-                                .show()
+                                .setNegativeButton("Batal") { dialog, _ ->
+                                    dialog.dismiss()
+                                }
+                                .create()
+
+                            alertDialog.setOnShowListener {
+                                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_green_dark))
+                                alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_red_dark))
+                            }
+
+                            alertDialog.show()
                         }
                     }
 
+                    val btnUbah = Button(requireContext()).apply {
+                        text = "Ubah"
+                        textSize = 12f
+                        layoutParams = LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT
+                        ).apply {
+                            marginStart = 8
+                        }
+
+                        setOnClickListener {
+                            // Navigasi ke fragment ubah jurnal atau tampilkan dialog ubah
+                            val fragment = UbahJurnalFragment().apply {
+                                arguments = Bundle().apply {
+                                    putString("id_jurnal", idJurnal)
+                                    putString("nis", nis)
+                                    putString("nama", nama)
+                                    putString("tanggal", tanggal)
+                                    putString("uraian", uraian)
+                                    putString("catatan", catatan)
+                                    putString("paraf", fotoParaf)
+                                }
+                            }
+
+                            parentFragmentManager.beginTransaction()
+                                .replace(R.id.fragment_container, fragment)
+                                .addToBackStack(null)
+                                .commit()
+                        }
+                    }
+
+// Layout horizontal berisi tombol Hapus dan Ubah
                     val aksiLayout = LinearLayout(requireContext()).apply {
-                        orientation = LinearLayout.VERTICAL
-                        gravity = Gravity.CENTER
+                        orientation = LinearLayout.HORIZONTAL // Supaya tombol berdampingan
+                        gravity = Gravity.CENTER              // Untuk posisi isi di tengah
+                        layoutParams = TableRow.LayoutParams(
+                            TableRow.LayoutParams.MATCH_PARENT,
+                            TableRow.LayoutParams.MATCH_PARENT
+                        ).apply {
+                            gravity = Gravity.CENTER          // Pastikan layout cell-nya juga center
+                        }
+
+                        val layoutParamsUbah = LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT
+                        ).apply {
+                            marginEnd = 16 // Jarak antar tombol
+                        }
+
+                        val layoutParamsHapus = LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT
+                        )
+
+                        btnUbah.layoutParams = layoutParamsUbah
+                        btnHapus.layoutParams = layoutParamsHapus
+
+                        addView(btnUbah)
                         addView(btnHapus)
                     }
 
+
+
+                    // Tambahkan ke baris tabel
                     row.addView(aksiLayout)
                     tableJurnal.addView(row)
                 }
