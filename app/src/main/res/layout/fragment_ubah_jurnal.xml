@@ -1,0 +1,118 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Tombol Kembali -->
+        <ImageButton
+            android:id="@+id/btnKembali"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_revert"
+            android:contentDescription="Kembali"
+            android:layout_gravity="start"
+            android:tint="@android:color/black" />
+
+        <!-- Judul -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Form Ubah Jurnal"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:paddingVertical="16dp" />
+
+        <!-- Spinner NIS - Nama -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="NIS - Nama Siswa"
+            android:textStyle="bold"
+            android:paddingTop="8dp" />
+        <Spinner
+            android:id="@+id/spinnerNis"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp" />
+
+        <!-- Tanggal Kegiatan -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tanggal Kegiatan"
+            android:textStyle="bold" />
+        <EditText
+            android:id="@+id/etTanggal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="yyyy-mm-dd"
+            android:focusable="false"
+            android:inputType="none"
+            android:layout_marginBottom="12dp" />
+
+        <!-- Uraian -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Uraian Kegiatan"
+            android:textStyle="bold" />
+        <EditText
+            android:id="@+id/etUraian"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Masukkan uraian kegiatan"
+            android:layout_marginBottom="12dp" />
+
+        <!-- Catatan Pembimbing -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Catatan Pembimbing"
+            android:textStyle="bold" />
+        <EditText
+            android:id="@+id/etCatatan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Masukkan catatan pembimbing"
+            android:layout_marginBottom="12dp" />
+
+        <!-- Gambar Paraf -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Paraf Pembimbing"
+            android:textStyle="bold" />
+        <ImageView
+            android:id="@+id/ivParaf"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:scaleType="centerCrop"
+            android:layout_marginTop="8dp"
+            android:background="#DDDDDD" />
+
+        <Button
+            android:id="@+id/btnPilihParaf"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pilih Gambar Paraf"
+            android:layout_marginTop="8dp" />
+
+        <!-- Tombol Simpan -->
+        <Button
+            android:id="@+id/btnSimpan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Simpan Perubahan"
+            android:layout_marginTop="24dp"
+
+            android:textColor="@android:color/white" />
+    </LinearLayout>
+</ScrollView>

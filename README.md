@@ -19,6 +19,8 @@ Buat database jurnal PKl terdiri dari beberapa tabel sbb:
 
 -Backend memuat tambah data, ubah data, hapus data, cari data untuk semua tabel.
 
-Di Develoap Oleh 
+Di Develoap Oleh :
+
 -Firman Dwi Putra S
+
 -Achmad Rifady 

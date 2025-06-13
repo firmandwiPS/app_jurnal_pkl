@@ -6,6 +6,28 @@
         android:layout_width="match_parent" android:layout_height="wrap_content"
         android:orientation="vertical" android:padding="16dp">
 
+        <!-- Tombol Kembali -->
+        <ImageButton
+            android:id="@+id/btnKembali"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_revert"
+            android:contentDescription="Kembali"
+            android:layout_gravity="start"
+            android:tint="@android:color/black" />
+
+        <!-- Judul Form -->
+        <TextView
+            android:id="@+id/tvJudulForm"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Form Tambah Jurnal"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:paddingBottom="16dp" />
+
         <Spinner
             android:id="@+id/spinnerNis"
             android:layout_width="match_parent"

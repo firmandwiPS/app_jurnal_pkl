@@ -25,6 +25,8 @@ class TambahJurnalFragment : Fragment() {
     private lateinit var btnSimpan: Button
     private lateinit var btnPilihFoto: Button
     private var selectedImageUri: Uri? = null
+    private lateinit var btnKembali: ImageButton
+
 
     private val urlTambah = "http://192.168.36.139/jurnal_pkl/tambah_jurnal.php"
     private val urlDaftarSiswa = "http://192.168.36.139/jurnal_pkl/daftar_siswa.php"
@@ -39,6 +41,12 @@ class TambahJurnalFragment : Fragment() {
         imagePreview = view.findViewById(R.id.imagePreview)
         btnSimpan = view.findViewById(R.id.btnSimpan)
         btnPilihFoto = view.findViewById(R.id.btnPilihFoto)
+        btnKembali = view.findViewById(R.id.btnKembali)
+
+        // Tombol kembali
+        btnKembali.setOnClickListener {
+            requireActivity().supportFragmentManager.popBackStack()
+        }
 
         loadNis()
 
@@ -77,13 +85,36 @@ class TambahJurnalFragment : Fragment() {
     }
 
     private fun uploadData() {
-        val nis = spinnerNis.selectedItem.toString().split(" - ")[0]
-        val tanggal = editTanggal.text.toString()
-        val uraian = editUraian.text.toString()
-        val catatan = editCatatan.text.toString()
+        val nis = spinnerNis.selectedItem?.toString()?.split(" - ")?.get(0) ?: ""
+        val tanggal = editTanggal.text.toString().trim()
+        val uraian = editUraian.text.toString().trim()
+        val catatan = editCatatan.text.toString().trim()
+
+        if (nis.isEmpty()) {
+            Toast.makeText(requireContext(), "Pilih NIS terlebih dahulu!", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (tanggal.isEmpty()) {
+            editTanggal.error = "Tanggal harus diisi"
+            editTanggal.requestFocus()
+            return
+        }
+
+        if (uraian.isEmpty()) {
+            editUraian.error = "Uraian kegiatan harus diisi"
+            editUraian.requestFocus()
+            return
+        }
+
+        if (catatan.isEmpty()) {
+            editCatatan.error = "Catatan pembimbing harus diisi"
+            editCatatan.requestFocus()
+            return
+        }
 
         if (selectedImageUri == null) {
-            Toast.makeText(requireContext(), "Pilih foto paraf!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Pilih foto paraf terlebih dahulu!", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -92,6 +123,7 @@ class TambahJurnalFragment : Fragment() {
         }
 
         val byteArray = inputStream?.readBytes()
+
         val request = object : VolleyMultipartRequest(
             Method.POST, urlTambah,
             { response ->
@@ -120,6 +152,7 @@ class TambahJurnalFragment : Fragment() {
 
         Volley.newRequestQueue(requireContext()).add(request)
     }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
