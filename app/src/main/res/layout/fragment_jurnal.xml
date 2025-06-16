@@ -3,7 +3,8 @@
     android:id="@+id/scrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    android:background="#F5F5F5">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -22,13 +23,29 @@
             android:textColor="#333"
             android:paddingBottom="16dp" />
 
-        <Button
-            android:id="@+id/btnTambahJurnal"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Tambah"
-            android:layout_gravity="end"
-            android:layout_marginBottom="12dp" />
+            android:orientation="horizontal"
+            android:gravity="end"
+            android:layout_marginBottom="12dp">
+
+            <EditText
+                android:id="@+id/etCariJurnal"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:hint="Cari siswa..."
+                android:padding="8dp"
+                android:background="@android:drawable/editbox_background" />
+
+            <Button
+                android:id="@+id/btnTambahJurnal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tambah"
+                android:layout_marginStart="8dp" />
+        </LinearLayout>
 
         <!-- Scroll horizontal untuk tabel -->
         <HorizontalScrollView

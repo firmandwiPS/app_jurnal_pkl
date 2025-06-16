@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import org.json.JSONObject
 import java.util.*
 
 class Tambah_siswaFragment : Fragment() {
@@ -91,6 +92,7 @@ class Tambah_siswaFragment : Fragment() {
         }
     }
 
+
     private fun validasiInput(): Boolean {
         val inputs = listOf(
             Pair(etNis, "NIS wajib diisi"),
@@ -112,16 +114,32 @@ class Tambah_siswaFragment : Fragment() {
         return true
     }
 
+
+
+
     private fun simpanData() {
         val url = "http://192.168.36.139/jurnal_pkl/siswa/tambah_siswa.php"
 
         val stringRequest = object : StringRequest(Method.POST, url,
             { response ->
-                Log.d("TambahSiswa", "Response: $response")
-                Toast.makeText(requireContext(), "✅ Data berhasil ditambahkan", Toast.LENGTH_SHORT).show()
-
-                setFragmentResult("refreshSiswa", Bundle())
-                parentFragmentManager.popBackStack()
+                try {
+                    val obj = JSONObject(response)
+                    if (obj.getString("status") == "success") {
+                        Toast.makeText(requireContext(), "✅ Data berhasil ditambahkan", Toast.LENGTH_SHORT).show()
+                        setFragmentResult("refreshSiswa", Bundle())
+                        parentFragmentManager.popBackStack()
+                    } else {
+                        val msg = obj.getString("message")
+                        if (msg.contains("NIS sudah ada", true)) {
+                            etNis.error = "NIS sudah digunakan"
+                            etNis.requestFocus()
+                        }
+                        Toast.makeText(requireContext(), "❌ $msg", Toast.LENGTH_SHORT).show()
+                    }
+                } catch (e: Exception) {
+                    Log.e("TambahSiswa", "Parsing error: ${e.message}")
+                    Toast.makeText(requireContext(), "❌ Gagal parsing respon", Toast.LENGTH_SHORT).show()
+                }
             },
             { error ->
                 Log.e("TambahSiswa", "Volley Error: ${error.message}")
@@ -144,4 +162,5 @@ class Tambah_siswaFragment : Fragment() {
 
         Volley.newRequestQueue(requireContext()).add(stringRequest)
     }
+
 }
