@@ -12,8 +12,8 @@ import org.json.JSONArray
 class SiswaFragment : Fragment() {
 
     private lateinit var tableSiswa: TableLayout
-    private val urlTampil = "http://192.168.36.139/jurnal_pkl/tampil_siswa.php"
-    private val urlHapus = "http://192.168.36.139/jurnal_pkl/hapus_siswa.php"
+    private val urlTampil = "http://192.168.36.139/jurnal_pkl/siswa/tampil_siswa.php"
+    private val urlHapus = "http://192.168.36.139/jurnal_pkl/siswa/hapus_siswa.php"
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val view = inflater.inflate(R.layout.fragment_siswa, container, false)
