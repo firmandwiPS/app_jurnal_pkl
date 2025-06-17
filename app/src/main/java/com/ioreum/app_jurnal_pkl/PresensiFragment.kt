@@ -2,6 +2,8 @@ package com.ioreum.app_jurnal_pkl
 
 import android.app.DatePickerDialog
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.*
 import android.widget.*
 import androidx.fragment.app.Fragment
@@ -16,6 +18,9 @@ import java.util.*
 class PresensiFragment : Fragment() {
 
     private lateinit var tablePresensi: TableLayout
+    private lateinit var etCariPresensi: EditText
+    private lateinit var spinnerFilterKeterangan: Spinner
+    private var dataPresensiArray: JSONArray = JSONArray()
 
     private val urlTampil = "http://192.168.36.139/jurnal_pkl/tampil_presensi.php"
     private val urlTambahPresensi = "http://192.168.36.139/jurnal_pkl/tambah_presensi.php"
@@ -23,17 +28,38 @@ class PresensiFragment : Fragment() {
     private val urlGetNis = "http://192.168.36.139/jurnal_pkl/daftar_siswa.php"
     private val urlHapusPresensi = "http://192.168.36.139/jurnal_pkl/hapus_presensi.php"
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_presensi, container, false)
 
         tablePresensi = view.findViewById(R.id.tablePresensi)
         val btnTambah = view.findViewById<Button>(R.id.btnTambahPresensi)
+        etCariPresensi = view.findViewById(R.id.etCariPresensi)
+        spinnerFilterKeterangan = view.findViewById(R.id.spinnerFilterKeterangan)
 
-        btnTambah.setOnClickListener {
-            showBottomSheetPresensi()
+        val options = listOf("Semua", "Masuk", "Izin", "Alpa")
+        spinnerFilterKeterangan.adapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_spinner_dropdown_item,
+            options
+        )
+
+        spinnerFilterKeterangan.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                filterDataPresensi(etCariPresensi.text.toString())
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {}
         }
+
+        etCariPresensi.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) = Unit
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                filterDataPresensi(s.toString().trim())
+            }
+        })
+
+        btnTambah.setOnClickListener { showBottomSheetPresensi() }
 
         tampilkanHeader()
         loadDataPresensi()
@@ -60,89 +86,8 @@ class PresensiFragment : Fragment() {
     private fun loadDataPresensi() {
         val request = StringRequest(urlTampil, { response ->
             try {
-                val array = JSONArray(response)
-                for (i in 0 until array.length()) {
-                    val obj = array.getJSONObject(i)
-                    val row = TableRow(requireContext())
-
-                    val idPresensi = obj.getString("id_presensi")
-                    val data = listOf(
-                        (i + 1).toString(),
-                        obj.getString("nis"),
-                        obj.getString("nama_siswa"),
-                        obj.getString("tanggal"),
-                        obj.getString("keterangan")
-                    )
-
-                    data.forEach {
-                        val tv = TextView(requireContext()).apply {
-                            text = it
-                            setPadding(16, 12, 16, 12)
-                            gravity = Gravity.CENTER
-                            textAlignment = View.TEXT_ALIGNMENT_CENTER
-                            setTextColor(0xFF000000.toInt())
-                            layoutParams = TableRow.LayoutParams(
-                                TableRow.LayoutParams.WRAP_CONTENT,
-                                TableRow.LayoutParams.WRAP_CONTENT
-                            ).apply {
-                                gravity = Gravity.CENTER
-                            }
-                        }
-                        row.addView(tv)
-                    }
-
-                    val layoutAksi = LinearLayout(requireContext()).apply {
-                        orientation = LinearLayout.HORIZONTAL
-                        setPadding(8, 0, 8, 0)
-                    }
-
-                    val btnEdit = Button(requireContext()).apply {
-                        text = "Ubah"
-                        textSize = 12f
-                        setOnClickListener {
-                            showBottomSheetUbahPresensi(
-                                idPresensi,
-                                obj.getString("nis"),
-                                obj.getString("tanggal"),
-                                obj.getString("keterangan")
-                            )
-                        }
-                    }
-
-                    val btnHapus = Button(requireContext()).apply {
-                        text = "Hapus"
-                        textSize = 12f
-                        setOnClickListener {
-                            val alertDialog = android.app.AlertDialog.Builder(requireContext())
-                                .setTitle("Konfirmasi Hapus")
-                                .setMessage("Yakin ingin menghapus presensi siswa ${obj.getString("nama_siswa")} dengan NIS: ${obj.getString("nis")}?")
-                                .setPositiveButton("Ya") { _, _ ->
-                                    hapusPresensi(obj.getString("id_presensi"))
-                                }
-                                .setNegativeButton("Tidak") { dialog, _ ->
-                                    dialog.dismiss()
-                                }
-                                .create()
-
-                            alertDialog.setOnShowListener {
-                                alertDialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE)?.setTextColor(
-                                    resources.getColor(android.R.color.holo_green_dark, null)
-                                )
-                                alertDialog.getButton(android.app.AlertDialog.BUTTON_NEGATIVE)?.setTextColor(
-                                    resources.getColor(android.R.color.holo_red_dark, null)
-                                )
-                            }
-
-                            alertDialog.show()
-                        }
-                    }
-
-                    layoutAksi.addView(btnEdit)
-                    layoutAksi.addView(btnHapus)
-                    row.addView(layoutAksi)
-
-                    tablePresensi.addView(row)
-                }
+                dataPresensiArray = JSONArray(response)
+                filterDataPresensi(etCariPresensi.text.toString())
             } catch (e: Exception) {
                 Toast.makeText(requireContext(), "Data tidak valid", Toast.LENGTH_SHORT).show()
             }
@@ -153,21 +98,133 @@ class PresensiFragment : Fragment() {
         Volley.newRequestQueue(requireContext()).add(request)
     }
 
+    private fun filterDataPresensi(keyword: String) {
+        tablePresensi.removeAllViews()
+        tampilkanHeader()
+
+        val selectedKeterangan = spinnerFilterKeterangan.selectedItem?.toString()
+
+        if (dataPresensiArray.length() == 0) {
+            tampilkanPesan("Belum ada data presensi.")
+            return
+        }
+
+        var count = 1
+        var adaData = false
+
+        for (i in 0 until dataPresensiArray.length()) {
+            val obj = dataPresensiArray.getJSONObject(i)
+            val nis = obj.getString("nis")
+            val nama = obj.getString("nama_siswa")
+            val keterangan = obj.getString("keterangan")
+            val tanggal = obj.getString("tanggal")
+            val cocokKeyword = nis.contains(keyword, true) || nama.contains(keyword, true)
+            val cocokKeterangan = selectedKeterangan == "Semua" || keterangan == selectedKeterangan
+
+            if (cocokKeyword && cocokKeterangan) {
+                adaData = true
+                val row = TableRow(requireContext())
+                val idPresensi = obj.getString("id_presensi")
+                val data = listOf(
+                    (count++).toString(),
+                    nis,
+                    nama,
+                    tanggal,
+                    keterangan
+                )
+
+                data.forEach {
+                    val tv = TextView(requireContext()).apply {
+                        text = it
+                        setPadding(16, 47, 16, 12)
+                        gravity = Gravity.CENTER
+                        textAlignment = View.TEXT_ALIGNMENT_CENTER
+                        setTextColor(0xFF000000.toInt())
+                    }
+                    row.addView(tv)
+                }
+
+                val layoutAksi = LinearLayout(requireContext()).apply {
+                    orientation = LinearLayout.HORIZONTAL
+                    setPadding(8, 0, 8, 0)
+                }
+
+                val btnEdit = Button(requireContext()).apply {
+                    text = "Ubah"
+                    textSize = 12f
+                    setOnClickListener {
+                        showBottomSheetUbahPresensi(idPresensi, nis, obj.getString("tanggal"), keterangan)
+                    }
+                }
+
+                val btnHapus = Button(requireContext()).apply {
+                    text = "Hapus"
+                    textSize = 12f
+                    setOnClickListener {
+                        val alertDialog = android.app.AlertDialog.Builder(requireContext())
+                            .setTitle("Konfirmasi Hapus")
+                            .setMessage("Yakin ingin menghapus presensi siswa $nama dengan NIS: $nis?")
+                            .setPositiveButton("Ya") { _, _ -> hapusPresensi(idPresensi) }
+                            .setNegativeButton("Tidak", null)
+                            .create()
+                        alertDialog.show()
+                    }
+                }
+
+                layoutAksi.addView(btnEdit)
+                layoutAksi.addView(btnHapus)
+                row.addView(layoutAksi)
+                tablePresensi.addView(row)
+            }
+        }
+
+        if (!adaData) {
+            tampilkanPesan("Data presensi yang dicari tidak ditemukan.")
+        }
+    }
+
+
+    private fun tampilkanPesan(pesan: String) {
+        val row = TableRow(requireContext())
+
+        val tv = TextView(requireContext()).apply {
+            text = pesan
+            setPadding(32, 24, 32, 24)
+            gravity = Gravity.CENTER
+            textSize = 16f
+            setTypeface(null, android.graphics.Typeface.BOLD)
+            setTextColor(0xFFFFFFFF.toInt()) // Putih
+            setBackgroundColor(0xFFF44336.toInt()) // Merah warning
+            layoutParams = TableRow.LayoutParams(
+                TableRow.LayoutParams.MATCH_PARENT,
+                TableRow.LayoutParams.WRAP_CONTENT
+            ).apply {
+                span = 6 // Jumlah kolom tabel presensi
+            }
+        }
+
+        row.addView(tv)
+        tablePresensi.addView(row)
+    }
+
+
     private fun hapusPresensi(idPresensi: String) {
         val request = object : StringRequest(Method.POST, urlHapusPresensi,
             { response ->
-                try {
-                    val json = JSONObject(response)
-                    if (json.getBoolean("status")) {
-                        Toast.makeText(requireContext(), "Data berhasil dihapus", Toast.LENGTH_SHORT).show()
-                        tablePresensi.removeAllViews()
-                        tampilkanHeader()
+                val json = JSONObject(response)
+                if (json.getBoolean("status")) {
+                    Toast.makeText(requireContext(), "Data berhasil dihapus", Toast.LENGTH_SHORT).show()
+
+                    // Kosongkan table dan tampilkan header sebelum reload
+                    tablePresensi.removeAllViews()
+                    tampilkanHeader()
+
+                    // Delay kecil agar UI punya waktu render sebelum isi ulang
+                    tablePresensi.postDelayed({
                         loadDataPresensi()
-                    } else {
-                        Toast.makeText(requireContext(), json.getString("message"), Toast.LENGTH_SHORT).show()
-                    }
-                } catch (e: Exception) {
-                    Toast.makeText(requireContext(), "Respon tidak valid", Toast.LENGTH_SHORT).show()
+                    }, 200)
+                } else {
+                    Toast.makeText(requireContext(), json.getString("message"), Toast.LENGTH_SHORT).show()
                 }
             }, {
                 Toast.makeText(requireContext(), "Gagal koneksi ke server", Toast.LENGTH_SHORT).show()
@@ -178,6 +235,7 @@ class PresensiFragment : Fragment() {
         }
         Volley.newRequestQueue(requireContext()).add(request)
     }
+
 
     private fun showBottomSheetPresensi() {
         showBottomSheet(null, null, null, null)
@@ -245,15 +303,11 @@ class PresensiFragment : Fragment() {
             if (idPresensi == null) {
                 simpanPresensi(nis, tanggal, keterangan) {
                     dialog.dismiss()
-                    tablePresensi.removeAllViews()
-                    tampilkanHeader()
                     loadDataPresensi()
                 }
             } else {
                 ubahPresensi(idPresensi, nis, tanggal, keterangan) {
                     dialog.dismiss()
-                    tablePresensi.removeAllViews()
-                    tampilkanHeader()
                     loadDataPresensi()
                 }
             }
@@ -265,25 +319,17 @@ class PresensiFragment : Fragment() {
     private fun simpanPresensi(nis: String, tanggal: String, keterangan: String, onSuccess: () -> Unit) {
         val request = object : StringRequest(Method.POST, urlTambahPresensi,
             { response ->
-                try {
-                    val json = JSONObject(response)
-                    if (json.getBoolean("status")) {
-                        onSuccess()
-                    } else {
-                        Toast.makeText(context, json.getString("message"), Toast.LENGTH_SHORT).show()
-                    }
-                } catch (e: Exception) {
-                    Toast.makeText(context, "Gagal parsing respon", Toast.LENGTH_SHORT).show()
+                val json = JSONObject(response)
+                if (json.getBoolean("status")) {
+                    onSuccess()
+                } else {
+                    Toast.makeText(context, json.getString("message"), Toast.LENGTH_SHORT).show()
                 }
             }, {
                 Toast.makeText(context, "Gagal koneksi ke server", Toast.LENGTH_SHORT).show()
             }) {
             override fun getParams(): MutableMap<String, String> {
-                return hashMapOf(
-                    "nis" to nis,
-                    "tanggal" to tanggal,
-                    "keterangan" to keterangan
-                )
+                return hashMapOf("nis" to nis, "tanggal" to tanggal, "keterangan" to keterangan)
             }
         }
         Volley.newRequestQueue(requireContext()).add(request)
@@ -292,27 +338,18 @@ class PresensiFragment : Fragment() {
     private fun ubahPresensi(idPresensi: String, nis: String, tanggal: String, keterangan: String, onSuccess: () -> Unit) {
         val request = object : StringRequest(Method.POST, urlUbahPresensi,
             { response ->
-                try {
-                    val json = JSONObject(response)
-                    if (json.getBoolean("status")) {
-                        Toast.makeText(context, "Data berhasil diubah", Toast.LENGTH_SHORT).show()
-                        onSuccess()
-                    } else {
-                        Toast.makeText(context, json.getString("message"), Toast.LENGTH_SHORT).show()
-                    }
-                } catch (e: Exception) {
-                    Toast.makeText(context, "Gagal parsing respon", Toast.LENGTH_SHORT).show()
+                val json = JSONObject(response)
+                if (json.getBoolean("status")) {
+                    Toast.makeText(context, "Data berhasil diubah", Toast.LENGTH_SHORT).show()
+                    onSuccess()
+                } else {
+                    Toast.makeText(context, json.getString("message"), Toast.LENGTH_SHORT).show()
                 }
             }, {
                 Toast.makeText(context, "Gagal koneksi ke server", Toast.LENGTH_SHORT).show()
             }) {
             override fun getParams(): MutableMap<String, String> {
-                return hashMapOf(
-                    "id_presensi" to idPresensi,
-                    "nis" to nis,
-                    "tanggal" to tanggal,
-                    "keterangan" to keterangan
-                )
+                return hashMapOf("id_presensi" to idPresensi, "nis" to nis, "tanggal" to tanggal, "keterangan" to keterangan)
             }
         }
         Volley.newRequestQueue(requireContext()).add(request)

@@ -190,7 +190,7 @@ class SiswaFragment : Fragment() {
         data.forEach {
             val tv = TextView(requireContext()).apply {
                 text = it
-                setPadding(16, 12, 16, 12)
+                setPadding(16, 52, 16, 12)
                 gravity = Gravity.CENTER
                 textAlignment = View.TEXT_ALIGNMENT_CENTER
                 setTextColor(0xFF000000.toInt())
@@ -234,7 +234,7 @@ class SiswaFragment : Fragment() {
                 val alertDialog = android.app.AlertDialog.Builder(requireContext())
                     .setTitle("Konfirmasi Hapus")
                     .setMessage("Yakin ingin menghapus siswa ${obj.getString("nama_siswa")} (${obj.getString("nis")})?")
-                    .setPositiveButton("Ya") { _, _ ->
+                    .setPositiveButton("Ya, Hapus") { _, _ ->
                         hapusData(obj.getString("nis"))
                     }
                     .setNegativeButton("Tidak", null)

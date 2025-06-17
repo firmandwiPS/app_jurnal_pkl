@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tvTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tambah Laporan PKL"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:paddingBottom="24dp" />
+
+        <!-- Spinner siswa -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:hint="Pilih Siswa">
+
+            <Spinner
+                android:id="@+id/spinnerSiswa"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Input Nilai -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Nilai Akhir"
+            android:layout_marginBottom="16dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etNilai"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Pilih Laporan -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnPilihLaporan"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Pilih File Laporan"
+            android:layout_marginBottom="4dp"
+            app:icon="@drawable/ic_file_upload"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tvNamaFileLaporan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Belum ada file dipilih"
+
+            android:textSize="14sp"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Pilih Project -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnPilihProject"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Pilih File Project"
+            android:layout_marginBottom="4dp"
+            app:icon="@drawable/ic_file_upload"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tvNamaFileProject"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Belum ada file dipilih"
+
+            android:textSize="14sp"
+            android:layout_marginBottom="24dp" />
+
+        <!-- Tombol Simpan -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSimpan"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Simpan Laporan"
+            style="@style/Widget.MaterialComponents.Button"
+
+            android:textColor="@android:color/white"
+            app:cornerRadius="12dp" />
+
+    </LinearLayout>
+</ScrollView>

@@ -56,9 +56,10 @@ class JurnalFragment : Fragment() {
         listOf("No","NIS","Nama","Tanggal","Uraian","Catatan","Paraf","Aksi").forEach {
             val tv = TextView(requireContext()).apply {
                 text = it
-                setPadding(16,12,16,12)
-                setTextColor(0xFF000000.toInt())
+                setPadding(16, 12, 16, 12)
+                gravity = Gravity.CENTER
                 textAlignment = View.TEXT_ALIGNMENT_CENTER
+                setTextColor(0xFF000000.toInt())
                 setTypeface(null, android.graphics.Typeface.BOLD)
             }
             row.addView(tv)
@@ -97,7 +98,7 @@ class JurnalFragment : Fragment() {
             setTypeface(null, android.graphics.Typeface.BOLD)
             setTextColor(0xFFFFFFFF.toInt())
             setBackgroundColor(0xFFF44336.toInt())
-            setPadding(24,20,24,20)
+            setPadding(24, 20, 24, 20)
             layoutParams = TableRow.LayoutParams().apply { span = 8 }
         }
         row.addView(tv)
@@ -117,14 +118,14 @@ class JurnalFragment : Fragment() {
                 obj.getString("catatan_pembimbing")
             ).joinToString(" ").lowercase()
             if (combined.contains(lower)) {
-                tampilkanBaris(obj, idx)
+                tampilkanBaris(obj, idx, showDeleteButton = true)
                 found = true
             }
         }
         if (!found) tampilkanPesan("🔍 Data tidak ditemukan")
     }
 
-    private fun tampilkanBaris(obj: JSONObject, index: Int) {
+    private fun tampilkanBaris(obj: JSONObject, index: Int, showDeleteButton: Boolean = true) {
         val row = TableRow(requireContext())
         val idJ = obj.getString("id_jurnal")
         val nis = obj.getString("nis")
@@ -134,36 +135,46 @@ class JurnalFragment : Fragment() {
         val cat = obj.getString("catatan_pembimbing")
         val foto = obj.getString("paraf_pembimbing")
 
-        listOf((index+1).toString(), nis, nama, tgl, uraian, cat).forEach {
+        listOf((index + 1).toString(), nis, nama, tgl, uraian, cat).forEach {
             val tv = TextView(requireContext()).apply {
                 text = it
-                setPadding(12,8,12,8)
+                setPadding(12, 40, 12, 40) // Memberi padding vertikal agar teks tampak di tengah bawah
                 gravity = Gravity.CENTER
                 textAlignment = View.TEXT_ALIGNMENT_CENTER
                 setTextColor(0xFF000000.toInt())
+                layoutParams = TableRow.LayoutParams(
+                    TableRow.LayoutParams.WRAP_CONTENT,
+                    TableRow.LayoutParams.MATCH_PARENT
+                )
             }
             row.addView(tv)
         }
 
         val iv = ImageView(requireContext()).apply {
-            layoutParams = TableRow.LayoutParams(220,220)
+            layoutParams = TableRow.LayoutParams(220, 220)
             scaleType = ImageView.ScaleType.FIT_CENTER
-            setPadding(8,8,8,8)
+            setPadding(8, 8, 8, 8)
         }
+
         if (foto.isNotEmpty()) {
             Glide.with(this).load("http://192.168.36.139/jurnal_pkl/foto/$foto")
                 .placeholder(R.drawable.placeholder)
                 .error(R.drawable.error_image)
                 .into(iv)
-        } else iv.setImageResource(R.drawable.placeholder)
+        } else {
+            iv.setImageResource(R.drawable.placeholder)
+        }
         row.addView(iv)
 
         val layoutAksi = LinearLayout(requireContext()).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER
+            setPadding(0, 40, 0, 40) // Agar tombol Ubah & Hapus berada di tengah vertikal
         }
+
         val btnU = Button(requireContext()).apply {
-            text = "Ubah"; textSize = 12f
+            text = "Ubah"
+            textSize = 12f
             setOnClickListener {
                 val frag = UbahJurnalFragment().apply {
                     arguments = Bundle().apply {
@@ -182,30 +193,40 @@ class JurnalFragment : Fragment() {
                 }
             }
         }
-        val btnH = Button(requireContext()).apply {
-            text = "Hapus"; textSize = 12f
-            val alertDialog = AlertDialog.Builder(requireContext())
-                .setTitle("Konfirmasi")
-                .setMessage("Yakin ingin menghapus jurnal ini?")
-                .setPositiveButton("Ya") { _, _ -> hapusJurnal(idJ) }
-                .setNegativeButton("Batal", null)
-                .create()
-
-            alertDialog.setOnShowListener {
-                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
-                    .setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_green_dark))
-                alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
-                    .setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_red_dark))
-            }
-
-            alertDialog.show()
-
-        }
         layoutAksi.addView(btnU)
-        layoutAksi.addView(btnH)
+
+        if (showDeleteButton) {
+            val btnH = Button(requireContext()).apply {
+                text = "Hapus"
+                textSize = 12f
+                setOnClickListener {
+                    val alertDialog = AlertDialog.Builder(requireContext())
+                        .setTitle("Hapus Jurnal")
+                        .setMessage("Apakah Anda yakin ingin menghapus jurnal atas nama:\n\n$nama\nTanggal: $tgl ?")
+                        .setCancelable(false)
+                        .setPositiveButton("Ya, Hapus") { _, _ ->
+                            hapusJurnal(idJ)
+                        }
+                        .setNegativeButton("Batal", null)
+                        .create()
+
+                    alertDialog.setOnShowListener {
+                        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                            .setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_green_dark))
+                        alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+                            .setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_red_dark))
+                    }
+
+                    alertDialog.show()
+                }
+            }
+            layoutAksi.addView(btnH)
+        }
+
         row.addView(layoutAksi)
         tableJurnal.addView(row)
     }
+
 
     private fun hapusJurnal(idJurnal: String) {
         val req = object : StringRequest(Method.POST, urlHapusJurnal,

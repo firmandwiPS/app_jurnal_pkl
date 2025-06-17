@@ -6,4 +6,17 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="pilih_nis">Pilih NIS</string>
     <string name="pilih_ket">Pilih Keterangan</string>
+
+
+
+
+
+
+    <string-array name="keterangan_filter">
+        <item>Semua</item>
+        <item>Masuk</item>
+        <item>Izin</item>
+        <item>Alpa</item>
+    </string-array>
+
 </resources>

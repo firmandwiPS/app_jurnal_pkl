@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/scrollView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -30,14 +31,26 @@
             android:gravity="end"
             android:layout_marginBottom="12dp">
 
-            <EditText
-                android:id="@+id/etCariJurnal"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/textInputCariSiswa"
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="wrap_content"
-                android:hint="Cari siswa..."
-                android:padding="8dp"
-                android:background="@android:drawable/editbox_background" />
+                android:layout_weight="1"
+                android:hint="Cari Jurnal..."
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                app:startIconDrawable="@android:drawable/ic_menu_search"
+                app:startIconTint="@color/black"
+                app:boxStrokeColor="@color/bgcolor"
+                app:boxStrokeWidth="2dp"
+                app:boxBackgroundColor="@android:color/white">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etCariJurnal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    android:inputType="text" />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <Button
                 android:id="@+id/btnTambahJurnal"
@@ -56,7 +69,11 @@
                 android:id="@+id/tableJurnal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:stretchColumns="*" />
+                android:stretchColumns="*"
+                android:gravity="center"
+                android:background="@android:color/white"
+                android:elevation="4dp"
+                android:padding="8dp" />
         </HorizontalScrollView>
 
     </LinearLayout>
