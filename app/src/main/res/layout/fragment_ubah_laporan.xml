@@ -13,29 +13,25 @@
 
         <!-- Judul -->
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tvTitle"
+            android:id="@+id/tvTitleUbah"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Tambah Laporan PKL"
+            android:text="Ubah Laporan PKL"
             android:textSize="20sp"
             android:textStyle="bold"
             android:gravity="center"
             android:textColor="@color/black"
             android:paddingBottom="24dp" />
 
-        <!-- Spinner siswa -->
-        <com.google.android.material.textfield.TextInputLayout
+        <!-- Info siswa (read-only) -->
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tvInfoSiswa"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:hint="Pilih Siswa">
-
-            <Spinner
-                android:id="@+id/spinnerSiswa"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="8dp" />
-        </com.google.android.material.textfield.TextInputLayout>
+            android:text="NIS - Nama - Sekolah"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:paddingBottom="16dp" />
 
         <!-- Input Nilai -->
         <com.google.android.material.textfield.TextInputLayout
@@ -45,67 +41,58 @@
             android:layout_marginBottom="16dp">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etNilai"
+                android:id="@+id/etNilaiUbah"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="number" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Pilih File Laporan -->
+        <!-- Pilih File Laporan Baru -->
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnPilihLaporan"
+            android:id="@+id/btnPilihLaporanUbah"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Pilih File Laporan"
+            android:text="Ganti File Laporan (Opsional)"
             android:layout_marginBottom="4dp"
             app:icon="@drawable/ic_file_upload"
             app:iconGravity="textStart"
             app:iconPadding="8dp" />
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tvNamaFileLaporan"
+            android:id="@+id/tvNamaFileLaporanUbah"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Belum ada file dipilih"
+            android:text="Gunakan file sebelumnya"
             android:textSize="14sp"
-            android:layout_marginBottom="4dp" />
-
-        <!-- Informasi harus PDF -->
-        <com.google.android.material.textview.MaterialTextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="*File laporan harus berformat PDF"
-            android:textColor="@color/error"
-            android:textSize="12sp"
             android:layout_marginBottom="16dp" />
 
-        <!-- Pilih File Project -->
+        <!-- Pilih File Project Baru -->
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnPilihProject"
+            android:id="@+id/btnPilihProjectUbah"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Pilih File Project"
+            android:text="Ganti File Project (Opsional)"
             android:layout_marginBottom="4dp"
             app:icon="@drawable/ic_file_upload"
             app:iconGravity="textStart"
             app:iconPadding="8dp" />
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/tvNamaFileProject"
+            android:id="@+id/tvNamaFileProjectUbah"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Belum ada file dipilih"
+            android:text="Gunakan file sebelumnya"
             android:textSize="14sp"
             android:layout_marginBottom="24dp" />
 
-        <!-- Tombol Simpan -->
+        <!-- Tombol Simpan Perubahan -->
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnSimpan"
+            android:id="@+id/btnSimpanPerubahan"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Simpan Laporan"
+            android:text="Simpan Perubahan"
             style="@style/Widget.MaterialComponents.Button"
             android:textColor="@android:color/white"
             app:cornerRadius="12dp" />

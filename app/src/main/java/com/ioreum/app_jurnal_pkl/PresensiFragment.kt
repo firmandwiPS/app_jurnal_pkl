@@ -6,7 +6,9 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.*
 import android.widget.*
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.android.volley.Request
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
@@ -84,31 +86,33 @@ class PresensiFragment : Fragment() {
     }
 
     private fun loadDataPresensi() {
-        val request = StringRequest(urlTampil, { response ->
-            try {
-                dataPresensiArray = JSONArray(response)
+        val request = StringRequest(
+            Request.Method.GET, urlTampil,
+            { response ->
+                try {
+                    dataPresensiArray = JSONArray(response)
+                    filterDataPresensi(etCariPresensi.text.toString())
+                } catch (e: Exception) {
+                    Toast.makeText(requireContext(), "Data tidak valid", Toast.LENGTH_SHORT).show()
+                }
+            },
+            { error ->
+                // Jangan tampilkan toast di sini agar tidak mengganggu saat memang kosong
+                dataPresensiArray = JSONArray() // Kosongkan array
                 filterDataPresensi(etCariPresensi.text.toString())
-            } catch (e: Exception) {
-                Toast.makeText(requireContext(), "Data tidak valid", Toast.LENGTH_SHORT).show()
             }
-        }, {
-            Toast.makeText(requireContext(), "Tambahkan data presensi", Toast.LENGTH_SHORT).show()
-        })
+        )
 
         Volley.newRequestQueue(requireContext()).add(request)
     }
+
 
     private fun filterDataPresensi(keyword: String) {
         tablePresensi.removeAllViews()
         tampilkanHeader()
 
+
         val selectedKeterangan = spinnerFilterKeterangan.selectedItem?.toString()
-
-        if (dataPresensiArray.length() == 0) {
-            tampilkanPesan("Belum ada data presensi.")
-            return
-        }
-
         var count = 1
         var adaData = false
 
@@ -125,13 +129,7 @@ class PresensiFragment : Fragment() {
                 adaData = true
                 val row = TableRow(requireContext())
                 val idPresensi = obj.getString("id_presensi")
-                val data = listOf(
-                    (count++).toString(),
-                    nis,
-                    nama,
-                    tanggal,
-                    keterangan
-                )
+                val data = listOf((count++).toString(), nis, nama, tanggal, keterangan)
 
                 data.forEach {
                     val tv = TextView(requireContext()).apply {
@@ -146,6 +144,7 @@ class PresensiFragment : Fragment() {
 
                 val layoutAksi = LinearLayout(requireContext()).apply {
                     orientation = LinearLayout.HORIZONTAL
+                    gravity = Gravity.CENTER
                     setPadding(8, 0, 8, 0)
                 }
 
@@ -153,7 +152,7 @@ class PresensiFragment : Fragment() {
                     text = "Ubah"
                     textSize = 12f
                     setOnClickListener {
-                        showBottomSheetUbahPresensi(idPresensi, nis, obj.getString("tanggal"), keterangan)
+                        showBottomSheetUbahPresensi(idPresensi, nis, tanggal, keterangan)
                     }
                 }
 
@@ -164,9 +163,19 @@ class PresensiFragment : Fragment() {
                         val alertDialog = android.app.AlertDialog.Builder(requireContext())
                             .setTitle("Konfirmasi Hapus")
                             .setMessage("Yakin ingin menghapus presensi siswa $nama dengan NIS: $nis?")
-                            .setPositiveButton("Ya") { _, _ -> hapusPresensi(idPresensi) }
+                            .setPositiveButton("Ya, Hapus") { _, _ ->
+                                hapusPresensi(idPresensi)
+                            }
                             .setNegativeButton("Tidak", null)
                             .create()
+
+                        alertDialog.setOnShowListener {
+                            alertDialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE)
+                                ?.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_green_dark))
+                            alertDialog.getButton(android.app.AlertDialog.BUTTON_NEGATIVE)
+                                ?.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_red_dark))
+                        }
+
                         alertDialog.show()
                     }
                 }
@@ -178,10 +187,13 @@ class PresensiFragment : Fragment() {
             }
         }
 
-        if (!adaData) {
+        if (!adaData && dataPresensiArray.length() > 0) {
             tampilkanPesan("Data presensi yang dicari tidak ditemukan.")
+        } else if (!adaData && dataPresensiArray.length() == 0) {
+            tampilkanPesan("Data presensi masih kosong.")
         }
     }
+
 
 
     private fun tampilkanPesan(pesan: String) {
@@ -199,7 +211,7 @@ class PresensiFragment : Fragment() {
                 TableRow.LayoutParams.MATCH_PARENT,
                 TableRow.LayoutParams.WRAP_CONTENT
             ).apply {
-                span = 6 // Jumlah kolom tabel presensi
+                span = 10 // Jumlah kolom tabel
             }
         }
 
@@ -218,6 +230,7 @@ class PresensiFragment : Fragment() {
                     // Kosongkan table dan tampilkan header sebelum reload
                     tablePresensi.removeAllViews()
                     tampilkanHeader()
+                    loadDataPresensi()
 
                     // Delay kecil agar UI punya waktu render sebelum isi ulang
                     tablePresensi.postDelayed({
