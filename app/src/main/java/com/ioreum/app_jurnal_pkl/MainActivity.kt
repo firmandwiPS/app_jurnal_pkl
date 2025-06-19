@@ -1,90 +1,92 @@
 package com.ioreum.app_jurnal_pkl
 
-import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.view.MenuItem
-import android.widget.GridLayout
-import android.widget.Toast
-//import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
-import androidx.cardview.widget.CardView
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.core.view.GravityCompat
-import androidx.drawerlayout.widget.DrawerLayout
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
-import com.google.android.material.navigation.NavigationView
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
+import com.ioreum.app_jurnal_pkl.databinding.ActivityMainBinding
 
-class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+class MainActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityMainBinding
+    private lateinit var viewPager: ViewPager2
+    private var currentIndex = 2 // Langsung mulai dari HomeFragment
+    private var isFromFabClick = true // Untuk trigger awal Home dari FAB
 
-    private lateinit var drawerLayout: DrawerLayout
+    private val fragmentList = listOf(
+        SiswaFragment(),     // index 0
+        JurnalFragment(),    // index 1
+        HomeFragment(),      // index 2 (FAB)
+        PresensiFragment(),  // index 3
+        laporan_pklFragment()// index 4
+    )
+
+    private val navIds = listOf(
+        R.id.siswa,
+        R.id.jurnal,
+        R.id.fab,
+        R.id.presensi,
+        R.id.laporan
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        // Inisialisasi DrawerLayout
-        drawerLayout = findViewById(R.id.drawer_layout)
+        // Ambil ViewPager dari CustomViewPager2 (yang bisa disable index tertentu)
+        viewPager = binding.viewPager.findViewById(R.id.innerViewPager)
 
-        // Inisialisasi Toolbar dan atur sebagai ActionBar
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
-        setSupportActionBar(toolbar)
+        // Styling background nav
+        binding.bottomNavigationView.setBackgroundColor(Color.TRANSPARENT)
+        binding.bottomNavigationView.setBackgroundResource(R.drawable.nav_background_with_touch_block)
 
-        // Inisialisasi NavigationView dan atur listener
-        val navigationView = findViewById<NavigationView>(R.id.nav_view)
-        navigationView.setNavigationItemSelectedListener(this)
-
-        // Buat instance ActionBarDrawerToggle
-        val toggle = ActionBarDrawerToggle(
-            this, drawerLayout, toolbar,
-            R.string.open, R.string.close
-        )
-        drawerLayout.addDrawerListener(toggle)
-        toggle.syncState()
-
-        // Set fragment default saat pertama kali dibuka
-        if (savedInstanceState == null) {
-            replaceFragment(MenuFragment())
-            navigationView.setCheckedItem(R.id.menu)
+        // Adapter ViewPager
+        val adapter = object : FragmentStateAdapter(this) {
+            override fun getItemCount(): Int = fragmentList.size
+            override fun createFragment(position: Int) = fragmentList[position]
         }
-    }
+        viewPager.adapter = adapter
 
-    override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.menu -> replaceFragment(MenuFragment())
-            R.id.siswa -> replaceFragment(SiswaFragment())
-            R.id.jurnal -> replaceFragment(JurnalFragment())
-            R.id.presensi -> replaceFragment(PresensiFragment())
-            R.id.laporan_pkl -> replaceFragment(laporan_pklFragment())
-            R.id.logout -> {
-                Toast.makeText(this, "Logout!", Toast.LENGTH_SHORT).show()
-                finishAffinity() // Menutup semua aktivitas dan keluar dari aplikasi
+        // Nonaktifkan swipe ke HomeFragment (index 2 = FAB)
+        binding.viewPager.disabledIndex = 2
+
+        // ViewPager ke BottomNavigation
+        viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                if (position == 2 && !isFromFabClick && currentIndex != 2) {
+                    // Cegah swipe ke HomeFragment
+                    val target = if (currentIndex < position) 3 else 1
+                    viewPager.setCurrentItem(target, true)
+                } else {
+                    binding.bottomNavigationView.selectedItemId = navIds[position]
+                    currentIndex = position
+                }
+                isFromFabClick = false
             }
-        }
-        drawerLayout.closeDrawer(GravityCompat.START)
-        return true
-    }
+        })
 
-    private fun replaceFragment(fragment: Fragment) {
-        val transaction: FragmentTransaction = supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.fragment_container, fragment)
-        transaction.addToBackStack(null) // Menambahkan transaksi ke back stack
-        transaction.commit()
-    }
-
-    override fun onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START)
-        } else {
-            if (supportFragmentManager.backStackEntryCount > 0) {
-                supportFragmentManager.popBackStack() // Kembali ke fragment sebelumnya
-            } else {
-                super.onBackPressed() // Keluar dari aplikasi jika tidak ada fragment sebelumnya
+        // BottomNavigation -> ViewPager
+        binding.bottomNavigationView.setOnItemSelectedListener { item ->
+            val index = navIds.indexOf(item.itemId)
+            if (index != -1 && index != 2 && index != currentIndex) {
+                viewPager.setCurrentItem(index, true)
+                currentIndex = index
             }
+            true
         }
+
+        // FAB -> HomeFragment
+        binding.home.setOnClickListener {
+            isFromFabClick = true
+            viewPager.setCurrentItem(2, true)
+            binding.bottomNavigationView.selectedItemId = R.id.fab
+            currentIndex = 2
+        }
+
+        // 👇 Buka langsung HomeFragment saat pertama kali aplikasi dibuka
+        viewPager.setCurrentItem(2, false)
+        binding.bottomNavigationView.selectedItemId = R.id.fab
+        currentIndex = 2
     }
 }

@@ -2,54 +2,72 @@ package com.ioreum.app_jurnal_pkl
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.bumptech.glide.Glide
 import org.json.JSONArray
+import org.json.JSONObject
 
 class JurnalFragment : Fragment() {
 
     private lateinit var tableJurnal: TableLayout
+    private lateinit var etCariJurnal: EditText
     private lateinit var btnTambah: Button
 
-    private val urlTampilJurnal = "http://192.168.36.139/jurnal_pkl/tampil_jurnal.php"
-    private val urlHapusJurnal = "http://192.168.36.139/jurnal_pkl/hapus_jurnal.php"
+    private val urlTampilJurnal = "http://172.16.100.91/jurnal_pkl/tampil_jurnal.php"
+    private val urlHapusJurnal = "http://172.16.100.91/jurnal_pkl/hapus_jurnal.php"
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    private val originalList = mutableListOf<JSONObject>()
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_jurnal, container, false)
-        tableJurnal = view.findViewById(R.id.tableJurnal)
-        btnTambah = view.findViewById(R.id.btnTambahJurnal)
+        tableJurnal     = view.findViewById(R.id.tableJurnal)
+        etCariJurnal    = view.findViewById(R.id.etCariJurnal)
+        btnTambah       = view.findViewById(R.id.btnTambahJurnal)
 
         btnTambah.setOnClickListener {
+            val fragment = TambahJurnalFragment()
             parentFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, TambahJurnalFragment())
+                .add(R.id.overlay_fragment_container, fragment)
                 .addToBackStack(null)
                 .commit()
+            requireActivity().findViewById<View>(R.id.home).visibility = View.GONE
+            requireActivity().findViewById<View>(R.id.overlay_fragment_container).visibility = View.VISIBLE
         }
+
+        // Dengarkan sinyal dari Tambah/Ubah
+        parentFragmentManager.setFragmentResultListener("refreshJurnal", viewLifecycleOwner) { _, _ ->
+            loadDataJurnal()
+        }
+
+        etCariJurnal.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: android.text.Editable?) {
+                filterDataJurnal(s.toString())
+            }
+        })
 
         tampilkanHeader()
         loadDataJurnal()
-
         return view
     }
 
     private fun tampilkanHeader() {
+        tableJurnal.removeAllViews()
         val row = TableRow(requireContext())
-        val headers = listOf("No", "NIS", "Nama", "Tanggal Kegiatan ", "Uraian Kegiatan", "Catatan Pembimbing", "Paraf Pembimbing", "Aksi")
-        headers.forEach {
+        listOf("No","NIS","Nama","Tanggal","Uraian","Catatan","Paraf","Aksi").forEach {
             val tv = TextView(requireContext()).apply {
                 text = it
                 setPadding(16, 12, 16, 12)
-                setTextColor(0xFF000000.toInt())
+                gravity = Gravity.CENTER
                 textAlignment = View.TEXT_ALIGNMENT_CENTER
+                setTextColor(0xFF000000.toInt())
                 setTypeface(null, android.graphics.Typeface.BOLD)
             }
             row.addView(tv)
@@ -58,168 +76,16 @@ class JurnalFragment : Fragment() {
     }
 
     private fun loadDataJurnal() {
-        tableJurnal.removeViews(1, tableJurnal.childCount - 1) // Hapus data lama
-
-        val request = StringRequest(urlTampilJurnal, { response ->
+        val req = StringRequest(urlTampilJurnal, { resp ->
             try {
-                val array = JSONArray(response)
-                for (i in 0 until array.length()) {
-                    val obj = array.getJSONObject(i)
-                    val row = TableRow(requireContext())
-
-                    val idJurnal = obj.getString("id_jurnal") // Dapatkan id_jurnal
-                    val nis = obj.getString("nis")
-                    val nama = obj.getString("nama_siswa")
-                    val tanggal = obj.getString("tanggal_kegiatan")
-                    val uraian = obj.getString("uraian_kegiatan")
-                    val catatan = obj.getString("catatan_pembimbing")
-                    val fotoParaf = obj.getString("paraf_pembimbing")
-
-                    val dataTeks = listOf((i + 1).toString(), nis, nama, tanggal, uraian, catatan)
-                    dataTeks.forEach {
-                        val tv = TextView(requireContext()).apply {
-                            text = it
-                            setPadding(16, 12, 16, 12)
-                            gravity = Gravity.CENTER  // Isi teks di tengah (vertikal dan horizontal)
-                            textAlignment = View.TEXT_ALIGNMENT_CENTER // Untuk dukungan tambahan
-                            setTextColor(0xFF000000.toInt())
-
-                            // Set layout parameter agar posisinya juga di tengah dalam TableRow
-                            layoutParams = TableRow.LayoutParams(
-                                TableRow.LayoutParams.WRAP_CONTENT,
-                                TableRow.LayoutParams.WRAP_CONTENT
-                            ).apply {
-                                gravity = Gravity.CENTER
-                            }
-                        }
-                        row.addView(tv)
-                    }
-
-
-                    val imageView = ImageView(requireContext()).apply {
-                        layoutParams = TableRow.LayoutParams(300, 300)
-                        scaleType = ImageView.ScaleType.FIT_CENTER  // Gambar tampil utuh
-                        adjustViewBounds = true
-                        setPadding(8, 8, 8, 8) // Opsional: beri padding supaya tidak nempel
-                    }
-
-                    if (fotoParaf.isNotEmpty()) {
-                        val urlFoto = "http://192.168.36.139/jurnal_pkl/foto/$fotoParaf"
-                        Glide.with(this)
-                            .load(urlFoto)
-                            .placeholder(R.drawable.placeholder)
-                            .error(R.drawable.error_image)
-                            .into(imageView)
-                    } else {
-                        imageView.setImageResource(R.drawable.placeholder)
-                    }
-
-                    row.addView(imageView)
-
-                    val btnHapus = Button(requireContext()).apply {
-                        text = "Hapus"
-                        textSize = 12f
-                        layoutParams = LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.WRAP_CONTENT,
-                            LinearLayout.LayoutParams.WRAP_CONTENT
-                        ).apply {
-                            gravity = Gravity.CENTER_HORIZONTAL  // tombol akan berada di tengah horizontal
-                            topMargin = 8
-                            bottomMargin = 8
-                        }
-
-                        setOnClickListener {
-                            val alertDialog = AlertDialog.Builder(requireContext())
-                                .setTitle("Konfirmasi")
-                                .setMessage("Yakin ingin menghapus jurnal ini?")
-                                .setPositiveButton("Ya") { dialog, _ ->
-                                    if (idJurnal.isNotEmpty()) {
-                                        hapusJurnal(idJurnal)
-                                    } else {
-                                        Toast.makeText(requireContext(), "ID jurnal tidak valid!", Toast.LENGTH_SHORT).show()
-                                    }
-                                    dialog.dismiss()
-                                }
-                                .setNegativeButton("Batal") { dialog, _ ->
-                                    dialog.dismiss()
-                                }
-                                .create()
-
-                            alertDialog.setOnShowListener {
-                                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_green_dark))
-                                alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_red_dark))
-                            }
-
-                            alertDialog.show()
-                        }
-                    }
-
-                    val btnUbah = Button(requireContext()).apply {
-                        text = "Ubah"
-                        textSize = 12f
-                        layoutParams = LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.WRAP_CONTENT,
-                            LinearLayout.LayoutParams.WRAP_CONTENT
-                        ).apply {
-                            marginStart = 8
-                        }
-
-                        setOnClickListener {
-                            // Navigasi ke fragment ubah jurnal atau tampilkan dialog ubah
-                            val fragment = UbahJurnalFragment().apply {
-                                arguments = Bundle().apply {
-                                    putString("id_jurnal", idJurnal)
-                                    putString("nis", nis)
-                                    putString("nama", nama)
-                                    putString("tanggal", tanggal)
-                                    putString("uraian", uraian)
-                                    putString("catatan", catatan)
-                                    putString("paraf", fotoParaf)
-                                }
-                            }
-
-                            parentFragmentManager.beginTransaction()
-                                .replace(R.id.fragment_container, fragment)
-                                .addToBackStack(null)
-                                .commit()
-                        }
-                    }
-
-// Layout horizontal berisi tombol Hapus dan Ubah
-                    val aksiLayout = LinearLayout(requireContext()).apply {
-                        orientation = LinearLayout.HORIZONTAL // Supaya tombol berdampingan
-                        gravity = Gravity.CENTER              // Untuk posisi isi di tengah
-                        layoutParams = TableRow.LayoutParams(
-                            TableRow.LayoutParams.MATCH_PARENT,
-                            TableRow.LayoutParams.MATCH_PARENT
-                        ).apply {
-                            gravity = Gravity.CENTER          // Pastikan layout cell-nya juga center
-                        }
-
-                        val layoutParamsUbah = LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.WRAP_CONTENT,
-                            LinearLayout.LayoutParams.WRAP_CONTENT
-                        ).apply {
-                            marginEnd = 16 // Jarak antar tombol
-                        }
-
-                        val layoutParamsHapus = LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.WRAP_CONTENT,
-                            LinearLayout.LayoutParams.WRAP_CONTENT
-                        )
-
-                        btnUbah.layoutParams = layoutParamsUbah
-                        btnHapus.layoutParams = layoutParamsHapus
-
-                        addView(btnUbah)
-                        addView(btnHapus)
-                    }
-
-
-
-                    // Tambahkan ke baris tabel
-                    row.addView(aksiLayout)
-                    tableJurnal.addView(row)
+                val arr = JSONArray(resp)
+                originalList.clear()
+                for (i in 0 until arr.length()) originalList.add(arr.getJSONObject(i))
+                if (originalList.isEmpty()) {
+                    tampilkanHeader()
+                    tampilkanPesan("📭 DATA JURNAL MASIH KOSONG")
+                } else {
+                    filterDataJurnal(etCariJurnal.text.toString())
                 }
             } catch (e: Exception) {
                 Toast.makeText(requireContext(), "Gagal parsing data", Toast.LENGTH_SHORT).show()
@@ -228,14 +94,160 @@ class JurnalFragment : Fragment() {
         }, {
             Toast.makeText(requireContext(), "Gagal memuat data jurnal", Toast.LENGTH_SHORT).show()
         })
-
-        Volley.newRequestQueue(requireContext()).add(request)
+        Volley.newRequestQueue(requireContext()).add(req)
     }
 
+    private fun tampilkanPesan(msg: String) {
+        val row = TableRow(requireContext())
+        val tv = TextView(requireContext()).apply {
+            text = msg
+            gravity = Gravity.CENTER
+            textSize = 16f
+            setTypeface(null, android.graphics.Typeface.BOLD)
+            setTextColor(0xFFFFFFFF.toInt())
+            setBackgroundColor(0xFFF44336.toInt())
+            setPadding(24, 20, 24, 20)
+            layoutParams = TableRow.LayoutParams().apply { span = 8 }
+        }
+        row.addView(tv)
+        tableJurnal.addView(row)
+    }
+
+    private fun filterDataJurnal(keyword: String) {
+        tampilkanHeader()
+        val lower = keyword.lowercase().trim()
+        var found = false
+        originalList.forEachIndexed { idx, obj ->
+            val combined = listOf(
+                obj.getString("nis"),
+                obj.getString("nama_siswa"),
+                obj.getString("tanggal_kegiatan"),
+                obj.getString("uraian_kegiatan"),
+                obj.getString("catatan_pembimbing")
+            ).joinToString(" ").lowercase()
+            if (combined.contains(lower)) {
+                tampilkanBaris(obj, idx, showDeleteButton = true)
+                found = true
+            }
+        }
+        if (!found) tampilkanPesan("🔍 Data tidak ditemukan")
+    }
+
+    private fun tampilkanBaris(obj: JSONObject, index: Int, showDeleteButton: Boolean = true) {
+        val row = TableRow(requireContext())
+        val idJ = obj.getString("id_jurnal")
+        val nis = obj.getString("nis")
+        val nama = obj.getString("nama_siswa")
+        val tgl = obj.getString("tanggal_kegiatan")
+        val uraian = obj.getString("uraian_kegiatan")
+        val cat = obj.getString("catatan_pembimbing")
+        val foto = obj.getString("paraf_pembimbing")
+
+        listOf((index + 1).toString(), nis, nama, tgl, uraian, cat).forEach {
+            val tv = TextView(requireContext()).apply {
+                text = it
+                setPadding(12, 40, 12, 40) // Memberi padding vertikal agar teks tampak di tengah bawah
+                gravity = Gravity.CENTER
+                textAlignment = View.TEXT_ALIGNMENT_CENTER
+                setTextColor(0xFF000000.toInt())
+                layoutParams = TableRow.LayoutParams(
+                    TableRow.LayoutParams.WRAP_CONTENT,
+                    TableRow.LayoutParams.MATCH_PARENT
+                )
+            }
+            row.addView(tv)
+        }
+
+        val iv = ImageView(requireContext()).apply {
+            layoutParams = TableRow.LayoutParams(220, 220)
+            scaleType = ImageView.ScaleType.FIT_CENTER
+            setPadding(8, 8, 8, 8)
+        }
+
+        if (foto.isNotEmpty()) {
+            Glide.with(this).load("http://172.16.100.91/jurnal_pkl/foto/$foto")
+                .placeholder(R.drawable.placeholder)
+                .error(R.drawable.error_image)
+                .into(iv)
+        } else {
+            iv.setImageResource(R.drawable.placeholder)
+        }
+        row.addView(iv)
+
+        val layoutAksi = LinearLayout(requireContext()).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER
+            setPadding(0, 40, 0, 40) // Agar tombol Ubah & Hapus berada di tengah vertikal
+        }
+
+        val btnU = Button(requireContext()).apply {
+            text = "Ubah"
+            textSize = 12f
+            setOnClickListener {
+                // Cegah fragment dobel
+                val existingFragment = parentFragmentManager.findFragmentByTag("UbahJurnal")
+                if (existingFragment == null) {
+                    val fragment = UbahJurnalFragment().apply {
+                        arguments = Bundle().apply {
+                            putString("id_jurnal", idJ)
+                            putString("nis", nis)
+                            putString("nama", nama)
+                            putString("tanggal", tgl)
+                            putString("uraian", uraian)
+                            putString("catatan", cat)
+                            putString("paraf", foto)
+                        }
+                    }
+
+                    parentFragmentManager.beginTransaction()
+                        .add(R.id.overlay_fragment_container, fragment, "UbahJurnal")
+                        .addToBackStack(null)
+                        .commit()
+
+                    requireActivity().findViewById<View>(R.id.overlay_fragment_container).visibility = View.VISIBLE
+                    requireActivity().findViewById<View>(R.id.home).visibility = View.GONE
+                }
+            }
+        }
+        layoutAksi.addView(btnU)
+
+        if (showDeleteButton) {
+            val btnH = Button(requireContext()).apply {
+                text = "Hapus"
+                textSize = 12f
+                setOnClickListener {
+                    val alertDialog = AlertDialog.Builder(requireContext())
+                        .setTitle("Hapus Jurnal")
+                        .setMessage("Apakah Anda yakin ingin menghapus jurnal atas nama:\n\n$nama\nTanggal: $tgl ?")
+                        .setCancelable(false)
+                        .setPositiveButton("Ya, Hapus") { _, _ ->
+                            hapusJurnal(idJ)
+                        }
+                        .setNegativeButton("Batal", null)
+                        .create()
+
+                    alertDialog.setOnShowListener {
+                        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                            .setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_green_dark))
+                        alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+                            .setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_red_dark))
+                    }
+
+                    alertDialog.show()
+                }
+            }
+            layoutAksi.addView(btnH)
+        }
+
+        row.addView(layoutAksi)
+        tableJurnal.addView(row)
+    }
+
+
     private fun hapusJurnal(idJurnal: String) {
-        val request = object : StringRequest(Method.POST, urlHapusJurnal,
-            { response ->
-                if (response == "sukses") {
+        val req = object : StringRequest(Method.POST, urlHapusJurnal,
+            { resp ->
+                if (resp == "sukses") {
                     Toast.makeText(requireContext(), "Data berhasil dihapus", Toast.LENGTH_SHORT).show()
                     loadDataJurnal()
                 } else {
@@ -244,12 +256,10 @@ class JurnalFragment : Fragment() {
             },
             {
                 Toast.makeText(requireContext(), "Terjadi kesalahan jaringan", Toast.LENGTH_SHORT).show()
-            }) {
-            override fun getParams(): MutableMap<String, String> {
-                return hashMapOf("id_jurnal" to idJurnal)
             }
+        ) {
+            override fun getParams(): MutableMap<String, String> = hashMapOf("id_jurnal" to idJurnal)
         }
-
-        Volley.newRequestQueue(requireContext()).add(request)
+        Volley.newRequestQueue(requireContext()).add(req)
     }
 }

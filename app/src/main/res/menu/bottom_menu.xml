@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/siswa"
+        android:title="Siswa"
+        android:icon="@drawable/siswa"/>
+
+    <item
+        android:id="@+id/jurnal"
+        android:title="Jurnal"
+        android:icon="@drawable/jurnal"/>
+
+    <item
+        android:id="@+id/fab"
+        android:title=""
+        android:enabled="false"/>
+
+    <item
+        android:id="@+id/presensi"
+        android:title="Presensi"
+        android:icon="@drawable/presensi"/>
+
+    <item
+        android:id="@+id/laporan"
+        android:title="Laporan PKL"
+        android:icon="@drawable/laporan_pkl"/>
+
+</menu>

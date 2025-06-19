@@ -28,7 +28,7 @@
             android:textSize="20sp"
             android:textStyle="bold"
             android:gravity="center"
-            android:paddingVertical="16dp" />
+            android:paddingBottom="16dp" />
 
         <!-- Spinner NIS - Nama -->
         <TextView
