@@ -23,7 +23,7 @@ class UbahSiswaFragment : Fragment() {
     private lateinit var btnSimpan: Button
     private lateinit var btnKembali: ImageButton
 
-    private val urlUbah = "http://172.16.100.6/jurnal_pkl/siswa/ubah_siswa.php"
+    private val urlUbah = "http://192.168.36.139/jurnal_pkl/siswa/ubah_siswa.php"
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?

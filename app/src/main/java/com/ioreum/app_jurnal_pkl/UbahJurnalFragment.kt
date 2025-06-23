@@ -84,7 +84,7 @@ class UbahJurnalFragment : Fragment() {
     }
 
     private fun loadSiswa() {
-        val url = "http://172.16.100.6/jurnal_pkl/ambil_siswa.php"
+        val url = "http://192.168.36.139/jurnal_pkl/ambil_siswa.php"
         val request = StringRequest(Request.Method.GET, url,
             { response ->
                 val jsonArray = JSONArray(response)
@@ -104,7 +104,7 @@ class UbahJurnalFragment : Fragment() {
     }
 
     private fun loadJurnal() {
-        val url = "http://172.16.100.6/jurnal_pkl/ambil_jurnal_by_id.php"
+        val url = "http://192.168.36.139/jurnal_pkl/ambil_jurnal_by_id.php"
         val request = object : StringRequest(Request.Method.POST, url,
             { response ->
                 val json = JSONObject(response)
@@ -115,7 +115,7 @@ class UbahJurnalFragment : Fragment() {
 
                 oldFileName = data.getString("paraf_pembimbing")
                 Glide.with(this)
-                    .load("http://172.16.100.6/jurnal_pkl/foto/$oldFileName")
+                    .load("http://192.168.36.139/jurnal_pkl/foto/$oldFileName")
                     .placeholder(R.drawable.placeholder)
                     .into(ivParaf)
 
@@ -138,7 +138,7 @@ class UbahJurnalFragment : Fragment() {
     }
 
     private fun uploadUpdate() {
-        val url = "http://172.16.100.6/jurnal_pkl/ubah_jurnal.php"
+        val url = "http://192.168.36.139/jurnal_pkl/ubah_jurnal.php"
         val multipartRequest = object : VolleyMultipartRequest(Method.POST, url,
             { response ->
                 val json = JSONObject(String(response.data))
