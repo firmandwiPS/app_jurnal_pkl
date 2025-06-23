@@ -28,12 +28,12 @@ class laporan_pklFragment : Fragment() {
     private lateinit var btnTambah: Button
     private lateinit var etCari: EditText
 
-    private val urlTampil = "http://172.16.100.91/jurnal_pkl/tampil_laporan.php"
-    private val urlTambah = "http://172.16.100.91/jurnal_pkl/tambah_laporan.php"
-    private val urlHapus = "http://172.16.100.91/jurnal_pkl/hapus_laporan.php"
-    private val urlUbah = "http://172.16.100.91/jurnal_pkl/ubah_laporan.php"
-    private val urlSiswa = "http://172.16.100.91/jurnal_pkl/tampil_siswa.php"
-    private val baseFileUrl = "http://172.16.100.91/jurnal_pkl/uploads/"
+    private val urlTampil = "http://172.16.100.6/jurnal_pkl/tampil_laporan.php"
+    private val urlTambah = "http://172.16.100.6/jurnal_pkl/tambah_laporan.php"
+    private val urlHapus = "http://172.16.100.6/jurnal_pkl/hapus_laporan.php"
+    private val urlUbah = "http://172.16.100.6/jurnal_pkl/ubah_laporan.php"
+    private val urlSiswa = "http://172.16.100.6/jurnal_pkl/tampil_siswa.php"
+    private val baseFileUrl = "http://172.16.100.6/jurnal_pkl/uploads/"
 
     private val siswaList = mutableListOf<Siswa>()
     private lateinit var selectedNis: String
@@ -66,6 +66,14 @@ class laporan_pklFragment : Fragment() {
 
         btnTambah.setOnClickListener { showTambahBottomSheet() }
         tampilkanLaporan()
+
+        etCari.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: android.text.Editable?) {
+                tampilkanLaporan(s.toString())
+            }
+        })
         return view
     }
 
@@ -88,10 +96,17 @@ class laporan_pklFragment : Fragment() {
                     }
                 tableLaporan.addView(header)
 
+                var no = 1
                 for (i in 0 until arr.length()) {
                     val obj = arr.getJSONObject(i)
                     val nis = obj.getString("nis")
-                    if (filterNIS.isEmpty() || nis.contains(filterNIS, ignoreCase = true)) {
+                    val nama = obj.getString("nama_siswa")
+                    val sekolah = obj.getString("asal_sekolah")
+                    val nilai = obj.getString("nilai_akhir_pkl")
+                    val gabungan = "$nis $nama $sekolah $nilai".lowercase()
+
+
+                    if (filterNIS.lowercase() in gabungan) {
                         val row = TableRow(requireContext())
                         val fileLaporan = obj.getString("file_laporan")
                         val fileProject = obj.getString("file_project")
@@ -99,10 +114,10 @@ class laporan_pklFragment : Fragment() {
                         val fileProjectUrl = baseFileUrl + fileProject
 
                         val cells = listOf(
-                            (i + 1).toString(),
+                            (no++).toString(),
                             nis,
-                            obj.getString("nama_siswa"),
-                            obj.getString("asal_sekolah"),
+                            nama,
+                            sekolah,
                             fileLaporan,
                             fileProject,
                             obj.getString("nilai_akhir_pkl")
@@ -132,13 +147,21 @@ class laporan_pklFragment : Fragment() {
                             row.addView(tv)
                         }
 
+                        val btnUbah = Button(requireContext()).apply {
+                            text = "Ubah"
+                            textSize = 12f
+                            setOnClickListener {
+                                showUbahBottomSheet(obj)
+                            }
+                        }
+
                         val btnHapus = Button(requireContext()).apply {
                             text = "Hapus"
                             textSize = 12f
                             setOnClickListener {
                                 val dialog = android.app.AlertDialog.Builder(requireContext())
                                     .setTitle("Konfirmasi Hapus")
-                                    .setMessage("Yakin ingin menghapus laporan siswa ${obj.getString("nama_siswa")}?")
+                                    .setMessage("Yakin ingin menghapus laporan siswa $nama?")
                                     .setPositiveButton("Ya, Hapus") { _, _ ->
                                         hapusLaporan(obj.getString("id_laporan_pkl"))
                                     }
@@ -146,7 +169,6 @@ class laporan_pklFragment : Fragment() {
                                     .create()
 
                                 dialog.setOnShowListener {
-                                    // Set warna tombol setelah dialog ditampilkan
                                     dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE)?.setTextColor(
                                         ContextCompat.getColor(requireContext(), android.R.color.holo_green_dark)
                                     )
@@ -156,14 +178,6 @@ class laporan_pklFragment : Fragment() {
                                 }
 
                                 dialog.show()
-                            }
-                        }
-
-                        val btnUbah = Button(requireContext()).apply {
-                            text = "Ubah"
-                            textSize = 12f
-                            setOnClickListener {
-                                showUbahBottomSheet(obj)
                             }
                         }
 

@@ -24,18 +24,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginBottom="12dp"
-        android:weightSum="10">
+        android:gravity="end"
+        android:layout_marginBottom="12dp">
 
-        <!-- Kolom Cari -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputCariLaporan"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="0dp"
-            android:layout_weight="6"
             android:layout_height="wrap_content"
-            android:hint="Cari NIS..."
+            android:layout_weight="1"
+            android:hint="Cari Laporan..."
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             app:startIconDrawable="@android:drawable/ic_menu_search"
             app:startIconTint="@color/black"
             app:boxStrokeColor="@color/bgcolor"
@@ -46,26 +44,16 @@
                 android:id="@+id/etCariLaporan"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text"
                 android:padding="8dp"
-                android:textColor="@android:color/black" />
+                android:inputType="text" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Tombol Tambah -->
         <Button
             android:id="@+id/btnTambahLaporan"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="4"
-            android:layout_marginStart="8dp"
             android:text="Tambah"
-            android:textAllCaps="false"
-            android:backgroundTint="#FF6200EE"
-            android:textColor="@android:color/white"
-            android:paddingLeft="12dp"
-            android:paddingRight="12dp"
-            android:minEms="4"
-            android:maxLines="1" />
+            android:layout_marginStart="8dp" />
     </LinearLayout>
 
     <!-- Tabel -->
@@ -83,15 +71,6 @@
             android:elevation="4dp"
             android:padding="8dp">
 
-            <!-- Header statis jika mau -->
-            <!--
-            <TableRow android:background="#FF6200EE" android:padding="6dp">
-                <TextView android:text="NIS" android:textColor="@android:color/white" android:padding="6dp"/>
-                <TextView android:text="Laporan" android:textColor="@android:color/white" android:padding="6dp"/>
-                <TextView android:text="Project" android:textColor="@android:color/white" android:padding="6dp"/>
-                <TextView android:text="Nilai" android:textColor="@android:color/white" android:padding="6dp"/>
-            </TableRow>
-            -->
         </TableLayout>
     </HorizontalScrollView>
 

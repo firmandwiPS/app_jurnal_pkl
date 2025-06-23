@@ -24,11 +24,11 @@ class PresensiFragment : Fragment() {
     private lateinit var spinnerFilterKeterangan: Spinner
     private var dataPresensiArray: JSONArray = JSONArray()
 
-    private val urlTampil = "http://172.16.100.91/jurnal_pkl/tampil_presensi.php"
-    private val urlTambahPresensi = "http://172.16.100.91/jurnal_pkl/tambah_presensi.php"
-    private val urlUbahPresensi = "http://172.16.100.91/jurnal_pkl/ubah_presensi.php"
-    private val urlGetNis = "http://172.16.100.91/jurnal_pkl/daftar_siswa.php"
-    private val urlHapusPresensi = "http://172.16.100.91/jurnal_pkl/hapus_presensi.php"
+    private val urlTampil = "http://172.16.100.6/jurnal_pkl/tampil_presensi.php"
+    private val urlTambahPresensi = "http://172.16.100.6/jurnal_pkl/tambah_presensi.php"
+    private val urlUbahPresensi = "http://172.16.100.6/jurnal_pkl/ubah_presensi.php"
+    private val urlGetNis = "http://172.16.100.6/jurnal_pkl/daftar_siswa.php"
+    private val urlHapusPresensi = "http://172.16.100.6/jurnal_pkl/hapus_presensi.php"
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_presensi, container, false)

@@ -115,7 +115,7 @@ class Tambah_siswaFragment : Fragment() {
     }
 
     private fun simpanData() {
-        val url = "http://172.16.100.91/jurnal_pkl/siswa/tambah_siswa.php"
+        val url = "http://172.16.100.6/jurnal_pkl/siswa/tambah_siswa.php"
 
         val stringRequest = object : StringRequest(Method.POST, url,
             { response ->

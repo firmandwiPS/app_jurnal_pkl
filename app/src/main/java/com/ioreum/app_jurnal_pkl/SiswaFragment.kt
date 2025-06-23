@@ -16,8 +16,8 @@ class SiswaFragment : Fragment() {
     private lateinit var etCariSiswa: EditText
     private lateinit var btnTambah: Button
 
-    private val urlTampil = "http://172.16.100.91/jurnal_pkl/siswa/tampil_siswa.php"
-    private val urlHapus = "http://172.16.100.91/jurnal_pkl/siswa/hapus_siswa.php"
+    private val urlTampil = "http://172.16.100.6/jurnal_pkl/siswa/tampil_siswa.php"
+    private val urlHapus = "http://172.16.100.6/jurnal_pkl/siswa/hapus_siswa.php"
 
     // Untuk menyimpan data mentah
     private val originalList = mutableListOf<JSONObject>()
