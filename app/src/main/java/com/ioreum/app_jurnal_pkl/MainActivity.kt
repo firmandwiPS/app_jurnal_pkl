@@ -1,24 +1,30 @@
 package com.ioreum.app_jurnal_pkl
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.ioreum.app_jurnal_pkl.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
+
     private lateinit var binding: ActivityMainBinding
     private lateinit var viewPager: ViewPager2
-    private var currentIndex = 2 // Langsung mulai dari HomeFragment
-    private var isFromFabClick = true // Untuk trigger awal Home dari FAB
+    private var currentIndex = 2
+    private var isFromFabClick = true
 
     private val fragmentList = listOf(
-        SiswaFragment(),     // index 0
-        JurnalFragment(),    // index 1
-        HomeFragment(),      // index 2 (FAB)
-        PresensiFragment(),  // index 3
-        laporan_pklFragment()// index 4
+        SiswaFragment(),     // 0
+        JurnalFragment(),    // 1
+        HomeFragment(),      // 2 (FAB)
+        PresensiFragment(),  // 3
+        laporan_pklFragment()// 4
     )
 
     private val navIds = listOf(
@@ -34,14 +40,44 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Ambil ViewPager dari CustomViewPager2 (yang bisa disable index tertentu)
+        // 🔔 Minta izin notifikasi untuk Android 13+ (TIRAMISU)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    101
+                )
+            } else {
+                ReminderUtil.scheduleDailyReminder(this)
+            }
+        } else {
+            ReminderUtil.scheduleDailyReminder(this)
+        }
+
+        setupViewPagerAndNavigation()
+    }
+
+    // 🔄 Jika user memberikan izin
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 101 && grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            ReminderUtil.scheduleDailyReminder(this)
+        }
+    }
+
+    private fun setupViewPagerAndNavigation() {
         viewPager = binding.viewPager.findViewById(R.id.innerViewPager)
 
-        // Styling background nav
         binding.bottomNavigationView.setBackgroundColor(Color.TRANSPARENT)
         binding.bottomNavigationView.setBackgroundResource(R.drawable.nav_background_with_touch_block)
 
-        // Adapter ViewPager
         val adapter = object : FragmentStateAdapter(this) {
             override fun getItemCount(): Int = fragmentList.size
             override fun createFragment(position: Int) = fragmentList[position]
@@ -51,11 +87,9 @@ class MainActivity : AppCompatActivity() {
         // Nonaktifkan swipe ke HomeFragment (index 2 = FAB)
         binding.viewPager.disabledIndex = 2
 
-        // ViewPager ke BottomNavigation
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 if (position == 2 && !isFromFabClick && currentIndex != 2) {
-                    // Cegah swipe ke HomeFragment
                     val target = if (currentIndex < position) 3 else 1
                     viewPager.setCurrentItem(target, true)
                 } else {
@@ -66,7 +100,6 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        // BottomNavigation -> ViewPager
         binding.bottomNavigationView.setOnItemSelectedListener { item ->
             val index = navIds.indexOf(item.itemId)
             if (index != -1 && index != 2 && index != currentIndex) {
@@ -76,7 +109,6 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
-        // FAB -> HomeFragment
         binding.home.setOnClickListener {
             isFromFabClick = true
             viewPager.setCurrentItem(2, true)
@@ -84,7 +116,7 @@ class MainActivity : AppCompatActivity() {
             currentIndex = 2
         }
 
-        // 👇 Buka langsung HomeFragment saat pertama kali aplikasi dibuka
+        // Mulai dari HomeFragment
         viewPager.setCurrentItem(2, false)
         binding.bottomNavigationView.selectedItemId = R.id.fab
         currentIndex = 2
