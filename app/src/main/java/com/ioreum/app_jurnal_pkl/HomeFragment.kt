@@ -372,6 +372,8 @@ class HomeFragment : Fragment() {
 
         val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
+        var totalPresensi = 0f
+
         for (i in 0 until dataPresensiArray.length()) {
             val obj = dataPresensiArray.getJSONObject(i)
             val tanggal = obj.getString("tanggal")
@@ -387,6 +389,7 @@ class HomeFragment : Fragment() {
 
             if (cocokJenis && cocokRange) {
                 bulanMap[bulanIndex] = (bulanMap[bulanIndex] ?: 0f) + 1
+                totalPresensi++
             }
         }
 
@@ -444,6 +447,9 @@ class HomeFragment : Fragment() {
         barChart.axisRight.isEnabled = false
         barChart.invalidate()
         tampilkanRingkasanSemuaJenisPerBulan()
+
+        val tvJumlahPresensi = binding.tvJumlahPresensi
+        tvJumlahPresensi.text = "Jumlah siswa: ${totalPresensi.toInt()}"
     }
 
     private fun tampilkanRingkasanSemuaJenisPerBulan() {
