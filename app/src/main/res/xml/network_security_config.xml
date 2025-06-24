@@ -7,9 +7,9 @@
 <!--        &lt;!&ndash;IP HP&ndash;&gt;-->
 <!--        <domain includeSubdomains="true">192.168.36.62</domain>-->
 
-        <domain includeSubdomains="true">172.16.100.6</domain>
+        <domain includeSubdomains="true">172.16.100.11</domain>
 
-        <domain includeSubdomains="true">172.16.100.5</domain>
+        <domain includeSubdomains="true">172.16.100.2</domain>
 
     </domain-config>
 </network-security-config>

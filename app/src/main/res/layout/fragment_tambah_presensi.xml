@@ -4,6 +4,17 @@
     android:padding="16dp"
     android:orientation="vertical">
 
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tvTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Tambah Presensi"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:textColor="@color/black"
+        android:paddingBottom="24dp" />
+
     <Spinner
         android:id="@+id/spinnerNis"
         android:layout_width="match_parent"

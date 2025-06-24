@@ -28,12 +28,12 @@ class laporan_pklFragment : Fragment() {
     private lateinit var btnTambah: Button
     private lateinit var etCari: EditText
 
-    private val urlTampil = "http://172.16.100.6/jurnal_pkl/tampil_laporan.php"
-    private val urlTambah = "http://172.16.100.6/jurnal_pkl/tambah_laporan.php"
-    private val urlHapus = "http://172.16.100.6/jurnal_pkl/hapus_laporan.php"
-    private val urlUbah = "http://172.16.100.6/jurnal_pkl/ubah_laporan.php"
-    private val urlSiswa = "http://172.16.100.6/jurnal_pkl/tampil_siswa.php"
-    private val baseFileUrl = "http://172.16.100.6/jurnal_pkl/uploads/"
+    private val urlTampil = "http://172.16.100.11/jurnal_pkl/tampil_laporan.php"
+    private val urlTambah = "http://172.16.100.11/jurnal_pkl/tambah_laporan.php"
+    private val urlHapus = "http://172.16.100.11/jurnal_pkl/hapus_laporan.php"
+    private val urlUbah = "http://172.16.100.11/jurnal_pkl/ubah_laporan.php"
+    private val urlSiswa = "http://172.16.100.11/jurnal_pkl/tampil_siswa.php"
+    private val baseFileUrl = "http://172.16.100.11/jurnal_pkl/uploads/"
 
     private val siswaList = mutableListOf<Siswa>()
     private lateinit var selectedNis: String

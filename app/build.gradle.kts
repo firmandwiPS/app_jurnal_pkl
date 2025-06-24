@@ -57,5 +57,6 @@ dependencies {
     implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     implementation ("com.google.android.material:material:1.12.0")
     implementation ("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
 }

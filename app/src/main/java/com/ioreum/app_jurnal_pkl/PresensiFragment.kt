@@ -8,12 +8,14 @@ import android.view.*
 import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import com.android.volley.Request
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import org.json.JSONArray
+import com.ioreum.app_jurnal_pkl.viewmodel.SharedPresensiViewModel
 import org.json.JSONObject
 import java.util.*
 
@@ -24,11 +26,13 @@ class PresensiFragment : Fragment() {
     private lateinit var spinnerFilterKeterangan: Spinner
     private var dataPresensiArray: JSONArray = JSONArray()
 
-    private val urlTampil = "http://172.16.100.6/jurnal_pkl/tampil_presensi.php"
-    private val urlTambahPresensi = "http://172.16.100.6/jurnal_pkl/tambah_presensi.php"
-    private val urlUbahPresensi = "http://172.16.100.6/jurnal_pkl/ubah_presensi.php"
-    private val urlGetNis = "http://172.16.100.6/jurnal_pkl/daftar_siswa.php"
-    private val urlHapusPresensi = "http://172.16.100.6/jurnal_pkl/hapus_presensi.php"
+    private val sharedViewModel: SharedPresensiViewModel by activityViewModels()
+
+    private val urlTampil = "http://172.16.100.11/jurnal_pkl/tampil_presensi.php"
+    private val urlTambahPresensi = "http://172.16.100.11/jurnal_pkl/tambah_presensi.php"
+    private val urlUbahPresensi = "http://172.16.100.11/jurnal_pkl/ubah_presensi.php"
+    private val urlGetNis = "http://172.16.100.11/jurnal_pkl/daftar_siswa.php"
+    private val urlHapusPresensi = "http://172.16.100.11/jurnal_pkl/hapus_presensi.php"
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_presensi, container, false)
@@ -38,12 +42,8 @@ class PresensiFragment : Fragment() {
         etCariPresensi = view.findViewById(R.id.etCariPresensi)
         spinnerFilterKeterangan = view.findViewById(R.id.spinnerFilterKeterangan)
 
-        val options = listOf("Semua", "Masuk", "Izin", "Alpa")
-        spinnerFilterKeterangan.adapter = ArrayAdapter(
-            requireContext(),
-            android.R.layout.simple_spinner_dropdown_item,
-            options
-        )
+        val options = listOf("Semua", "Masuk", "Izin", "Alfa")
+        spinnerFilterKeterangan.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, options)
 
         spinnerFilterKeterangan.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
@@ -96,21 +96,17 @@ class PresensiFragment : Fragment() {
                     Toast.makeText(requireContext(), "Data tidak valid", Toast.LENGTH_SHORT).show()
                 }
             },
-            { error ->
-                // Jangan tampilkan toast di sini agar tidak mengganggu saat memang kosong
-                dataPresensiArray = JSONArray() // Kosongkan array
+            {
+                dataPresensiArray = JSONArray()
                 filterDataPresensi(etCariPresensi.text.toString())
             }
         )
-
         Volley.newRequestQueue(requireContext()).add(request)
     }
-
 
     private fun filterDataPresensi(keyword: String) {
         tablePresensi.removeAllViews()
         tampilkanHeader()
-
 
         val selectedKeterangan = spinnerFilterKeterangan.selectedItem?.toString()
         var count = 1
@@ -194,8 +190,6 @@ class PresensiFragment : Fragment() {
         }
     }
 
-
-
     private fun tampilkanPesan(pesan: String) {
         val row = TableRow(requireContext())
 
@@ -205,20 +199,17 @@ class PresensiFragment : Fragment() {
             gravity = Gravity.CENTER
             textSize = 16f
             setTypeface(null, android.graphics.Typeface.BOLD)
-            setTextColor(0xFFFFFFFF.toInt()) // Putih
-            setBackgroundColor(0xFFF44336.toInt()) // Merah warning
+            setTextColor(0xFFFFFFFF.toInt())
+            setBackgroundColor(0xFFF44336.toInt())
             layoutParams = TableRow.LayoutParams(
                 TableRow.LayoutParams.MATCH_PARENT,
                 TableRow.LayoutParams.WRAP_CONTENT
-            ).apply {
-                span = 10 // Jumlah kolom tabel
-            }
+            ).apply { span = 10 }
         }
 
         row.addView(tv)
         tablePresensi.addView(row)
     }
-
 
     private fun hapusPresensi(idPresensi: String) {
         val request = object : StringRequest(Method.POST, urlHapusPresensi,
@@ -226,16 +217,11 @@ class PresensiFragment : Fragment() {
                 val json = JSONObject(response)
                 if (json.getBoolean("status")) {
                     Toast.makeText(requireContext(), "Data berhasil dihapus", Toast.LENGTH_SHORT).show()
-
-                    // Kosongkan table dan tampilkan header sebelum reload
                     tablePresensi.removeAllViews()
                     tampilkanHeader()
                     loadDataPresensi()
-
-                    // Delay kecil agar UI punya waktu render sebelum isi ulang
-                    tablePresensi.postDelayed({
-                        loadDataPresensi()
-                    }, 200)
+                    tablePresensi.postDelayed({ loadDataPresensi() }, 200)
+                    sharedViewModel.notifyDataUpdated()
                 } else {
                     Toast.makeText(requireContext(), json.getString("message"), Toast.LENGTH_SHORT).show()
                 }
@@ -248,7 +234,6 @@ class PresensiFragment : Fragment() {
         }
         Volley.newRequestQueue(requireContext()).add(request)
     }
-
 
     private fun showBottomSheetPresensi() {
         showBottomSheet(null, null, null, null)
@@ -263,10 +248,14 @@ class PresensiFragment : Fragment() {
         val view = layoutInflater.inflate(R.layout.fragment_tambah_presensi, null)
         dialog.setContentView(view)
 
+        val tvTitle = view.findViewById<TextView>(R.id.tvTitle)
+        tvTitle.text = if (idPresensi == null) "Tambah Presensi" else "Ubah Presensi"
+
         val spinnerNis = view.findViewById<Spinner>(R.id.spinnerNis)
         val etTanggal = view.findViewById<EditText>(R.id.etTanggal)
         val spinnerKeterangan = view.findViewById<Spinner>(R.id.spinnerKeterangan)
         val btnSimpan = view.findViewById<Button>(R.id.btnSimpan)
+
 
         val nisList = mutableListOf<String>()
         val nisMap = mutableMapOf<String, String>()
@@ -289,7 +278,7 @@ class PresensiFragment : Fragment() {
         })
         Volley.newRequestQueue(requireContext()).add(requestNis)
 
-        val keteranganOptions = listOf("Masuk", "Izin", "Alpa")
+        val keteranganOptions = listOf("Masuk", "Izin", "Alfa")
         spinnerKeterangan.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, keteranganOptions)
 
         if (tanggalLama != null) etTanggal.setText(tanggalLama)
@@ -334,6 +323,7 @@ class PresensiFragment : Fragment() {
             { response ->
                 val json = JSONObject(response)
                 if (json.getBoolean("status")) {
+                    sharedViewModel.notifyDataUpdated()
                     onSuccess()
                 } else {
                     Toast.makeText(context, json.getString("message"), Toast.LENGTH_SHORT).show()
@@ -354,6 +344,7 @@ class PresensiFragment : Fragment() {
                 val json = JSONObject(response)
                 if (json.getBoolean("status")) {
                     Toast.makeText(context, "Data berhasil diubah", Toast.LENGTH_SHORT).show()
+                    sharedViewModel.notifyDataUpdated()
                     onSuccess()
                 } else {
                     Toast.makeText(context, json.getString("message"), Toast.LENGTH_SHORT).show()
