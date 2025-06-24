@@ -1,6 +1,7 @@
 package com.ioreum.app_jurnal_pkl
 
 import android.app.DatePickerDialog
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -28,11 +29,11 @@ class PresensiFragment : Fragment() {
 
     private val sharedViewModel: SharedPresensiViewModel by activityViewModels()
 
-    private val urlTampil = "http://172.16.100.11/jurnal_pkl/tampil_presensi.php"
-    private val urlTambahPresensi = "http://172.16.100.11/jurnal_pkl/tambah_presensi.php"
-    private val urlUbahPresensi = "http://172.16.100.11/jurnal_pkl/ubah_presensi.php"
-    private val urlGetNis = "http://172.16.100.11/jurnal_pkl/daftar_siswa.php"
-    private val urlHapusPresensi = "http://172.16.100.11/jurnal_pkl/hapus_presensi.php"
+    private val urlTampil = "http://192.168.36.139/jurnal_pkl/tampil_presensi.php"
+    private val urlTambahPresensi = "http://192.168.36.139/jurnal_pkl/tambah_presensi.php"
+    private val urlUbahPresensi = "http://192.168.36.139/jurnal_pkl/ubah_presensi.php"
+    private val urlGetNis = "http://192.168.36.139/jurnal_pkl/daftar_siswa.php"
+    private val urlHapusPresensi = "http://192.168.36.139/jurnal_pkl/hapus_presensi.php"
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_presensi, container, false)
@@ -144,17 +145,37 @@ class PresensiFragment : Fragment() {
                     setPadding(8, 0, 8, 0)
                 }
 
-                val btnEdit = Button(requireContext()).apply {
-                    text = "Ubah"
-                    textSize = 12f
+                val sizeInDp = 30
+                val density = resources.displayMetrics.density
+                val sizeInPx = (sizeInDp * density).toInt()
+
+                val btnEdit = ImageButton(requireContext()).apply {
+                    setImageResource(R.drawable.edit)
+                    scaleType = ImageView.ScaleType.CENTER_INSIDE
+                    layoutParams = LinearLayout.LayoutParams(sizeInPx, sizeInPx).apply {
+                        marginEnd = 12
+                    }
+                    setPadding(8, 8, 8, 8)
+                    background = GradientDrawable().apply {
+                        shape = GradientDrawable.RECTANGLE
+                        cornerRadius = sizeInPx / 2f
+                        setColor(0xFFFFEB3B.toInt()) // Kuning
+                    }
                     setOnClickListener {
                         showBottomSheetUbahPresensi(idPresensi, nis, tanggal, keterangan)
                     }
                 }
 
-                val btnHapus = Button(requireContext()).apply {
-                    text = "Hapus"
-                    textSize = 12f
+                val btnHapus = ImageButton(requireContext()).apply {
+                    setImageResource(R.drawable.delete)
+                    scaleType = ImageView.ScaleType.CENTER_INSIDE
+                    layoutParams = LinearLayout.LayoutParams(sizeInPx, sizeInPx)
+                    setPadding(8, 8, 8, 8)
+                    background = GradientDrawable().apply {
+                        shape = GradientDrawable.RECTANGLE
+                        cornerRadius = sizeInPx / 2f
+                        setColor(0xFFF44336.toInt()) // Merah
+                    }
                     setOnClickListener {
                         val alertDialog = android.app.AlertDialog.Builder(requireContext())
                             .setTitle("Konfirmasi Hapus")
@@ -175,6 +196,7 @@ class PresensiFragment : Fragment() {
                         alertDialog.show()
                     }
                 }
+
 
                 layoutAksi.addView(btnEdit)
                 layoutAksi.addView(btnHapus)

@@ -61,7 +61,7 @@
             android:spinnerMode="dropdown" />
 
         <!-- Tombol Tambah -->
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnTambahPresensi"
             android:layout_width="23dp"
             android:layout_height="wrap_content"
@@ -69,12 +69,14 @@
             android:layout_marginStart="8dp"
             android:text="Tambah"
             android:textAllCaps="false"
-            android:backgroundTint="#FF6200EE"
-            android:textColor="@android:color/white"
             android:paddingLeft="12dp"
             android:paddingRight="12dp"
             android:minEms="4"
-            android:maxLines="1" />
+            android:maxLines="1"
+            android:textColor="@android:color/white"
+            app:backgroundTint="@color/green"
+            app:cornerRadius="8dp"
+            app:iconPadding="8dp"/>
     </LinearLayout>
 
 

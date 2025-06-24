@@ -1,12 +1,15 @@
 package com.ioreum.app_jurnal_pkl
 
 import android.app.AlertDialog
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.*
 import android.widget.*
 import androidx.core.content.ContextCompat
+import androidx.core.view.setPadding
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.commit
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.bumptech.glide.Glide
@@ -19,16 +22,17 @@ class JurnalFragment : Fragment() {
     private lateinit var etCariJurnal: EditText
     private lateinit var btnTambah: Button
 
-    private val urlTampilJurnal = "http://172.16.100.11/jurnal_pkl/tampil_jurnal.php"
-    private val urlHapusJurnal = "http://172.16.100.11/jurnal_pkl/hapus_jurnal.php"
+    private val urlTampilJurnal = "http://192.168.36.139/jurnal_pkl/tampil_jurnal.php"
+    private val urlHapusJurnal = "http://192.168.36.139/jurnal_pkl/hapus_jurnal.php"
 
     private val originalList = mutableListOf<JSONObject>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_jurnal, container, false)
-        tableJurnal     = view.findViewById(R.id.tableJurnal)
-        etCariJurnal    = view.findViewById(R.id.etCariJurnal)
-        btnTambah       = view.findViewById(R.id.btnTambahJurnal)
+
+        tableJurnal = view.findViewById(R.id.tableJurnal)
+        etCariJurnal = view.findViewById(R.id.etCariJurnal)
+        btnTambah = view.findViewById(R.id.btnTambahJurnal)
 
         btnTambah.setOnClickListener {
             val fragment = TambahJurnalFragment()
@@ -40,15 +44,14 @@ class JurnalFragment : Fragment() {
             requireActivity().findViewById<View>(R.id.overlay_fragment_container).visibility = View.VISIBLE
         }
 
-        // Dengarkan sinyal dari Tambah/Ubah
         parentFragmentManager.setFragmentResultListener("refreshJurnal", viewLifecycleOwner) { _, _ ->
             loadDataJurnal()
         }
 
-        etCariJurnal.addTextChangedListener(object : android.text.TextWatcher {
+        etCariJurnal.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: android.text.Editable?) {
+            override fun afterTextChanged(s: Editable?) {
                 filterDataJurnal(s.toString())
             }
         })
@@ -61,7 +64,7 @@ class JurnalFragment : Fragment() {
     private fun tampilkanHeader() {
         tableJurnal.removeAllViews()
         val row = TableRow(requireContext())
-        listOf("No","NIS","Nama","Tanggal","Uraian","Catatan","Paraf","Aksi").forEach {
+        listOf("No", "NIS", "Nama", "Tanggal", "Uraian", "Catatan", "Paraf", "Aksi").forEach {
             val tv = TextView(requireContext()).apply {
                 text = it
                 setPadding(16, 12, 16, 12)
@@ -126,14 +129,14 @@ class JurnalFragment : Fragment() {
                 obj.getString("catatan_pembimbing")
             ).joinToString(" ").lowercase()
             if (combined.contains(lower)) {
-                tampilkanBaris(obj, idx, showDeleteButton = true)
+                tampilkanBaris(obj, idx)
                 found = true
             }
         }
         if (!found) tampilkanPesan("🔍 Data tidak ditemukan")
     }
 
-    private fun tampilkanBaris(obj: JSONObject, index: Int, showDeleteButton: Boolean = true) {
+    private fun tampilkanBaris(obj: JSONObject, index: Int) {
         val row = TableRow(requireContext())
         val idJ = obj.getString("id_jurnal")
         val nis = obj.getString("nis")
@@ -146,7 +149,7 @@ class JurnalFragment : Fragment() {
         listOf((index + 1).toString(), nis, nama, tgl, uraian, cat).forEach {
             val tv = TextView(requireContext()).apply {
                 text = it
-                setPadding(12, 40, 12, 40) // Memberi padding vertikal agar teks tampak di tengah bawah
+                setPadding(12, 40, 12, 40)
                 gravity = Gravity.CENTER
                 textAlignment = View.TEXT_ALIGNMENT_CENTER
                 setTextColor(0xFF000000.toInt())
@@ -161,11 +164,11 @@ class JurnalFragment : Fragment() {
         val iv = ImageView(requireContext()).apply {
             layoutParams = TableRow.LayoutParams(220, 220)
             scaleType = ImageView.ScaleType.FIT_CENTER
-            setPadding(8, 8, 8, 8)
+            setPadding(8)
         }
 
         if (foto.isNotEmpty()) {
-            Glide.with(this).load("http://172.16.100.11/jurnal_pkl/foto/$foto")
+            Glide.with(this).load("http://192.168.36.139/jurnal_pkl/foto/$foto")
                 .placeholder(R.drawable.placeholder)
                 .error(R.drawable.error_image)
                 .into(iv)
@@ -177,72 +180,88 @@ class JurnalFragment : Fragment() {
         val layoutAksi = LinearLayout(requireContext()).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER
-            setPadding(0, 40, 0, 40) // Agar tombol Ubah & Hapus berada di tengah vertikal
+            setPadding(0, 40, 0, 40)
         }
 
-        val btnU = Button(requireContext()).apply {
-            text = "Ubah"
-            textSize = 12f
-            setOnClickListener {
-                // Cegah fragment dobel
-                val existingFragment = parentFragmentManager.findFragmentByTag("UbahJurnal")
-                if (existingFragment == null) {
-                    val fragment = UbahJurnalFragment().apply {
-                        arguments = Bundle().apply {
-                            putString("id_jurnal", idJ)
-                            putString("nis", nis)
-                            putString("nama", nama)
-                            putString("tanggal", tgl)
-                            putString("uraian", uraian)
-                            putString("catatan", cat)
-                            putString("paraf", foto)
-                        }
-                    }
+        fun createActionButton(iconRes: Int, bgColor: Int, action: () -> Unit): FrameLayout {
+            val container = FrameLayout(requireContext()).apply {
+                val size = 100
+                layoutParams = LinearLayout.LayoutParams(size, size).apply {
+                    setMargins(8, 0, 8, 0)
+                }
 
-                    parentFragmentManager.beginTransaction()
-                        .add(R.id.overlay_fragment_container, fragment, "UbahJurnal")
-                        .addToBackStack(null)
-                        .commit()
+                background = GradientDrawable().apply {
+                    shape = GradientDrawable.OVAL
+                    setColor(bgColor)
+                }
+                setOnClickListener { action() }
+            }
 
-                    requireActivity().findViewById<View>(R.id.overlay_fragment_container).visibility = View.VISIBLE
-                    requireActivity().findViewById<View>(R.id.home).visibility = View.GONE
+            val icon = ImageView(requireContext()).apply {
+                setImageResource(iconRes)
+                // Tidak pakai colorFilter agar warna asli (hitam) tampil
+                layoutParams = FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.MATCH_PARENT,
+                    FrameLayout.LayoutParams.MATCH_PARENT
+                )
+                scaleType = ImageView.ScaleType.CENTER_INSIDE
+                setPadding(20)
+            }
+
+            container.addView(icon)
+            return container
+        }
+
+        layoutAksi.addView(createActionButton(
+            iconRes = R.drawable.edit,
+            bgColor = 0xFFFFEB3B.toInt()
+        ) {
+            val fragment = UbahJurnalFragment().apply {
+                arguments = Bundle().apply {
+                    putString("id_jurnal", idJ)
+                    putString("nis", nis)
+                    putString("nama", nama)
+                    putString("tanggal", tgl)
+                    putString("uraian", uraian)
+                    putString("catatan", cat)
+                    putString("paraf", foto)
                 }
             }
-        }
-        layoutAksi.addView(btnU)
 
-        if (showDeleteButton) {
-            val btnH = Button(requireContext()).apply {
-                text = "Hapus"
-                textSize = 12f
-                setOnClickListener {
-                    val alertDialog = AlertDialog.Builder(requireContext())
-                        .setTitle("Hapus Jurnal")
-                        .setMessage("Apakah Anda yakin ingin menghapus jurnal atas nama:\n\n$nama\nTanggal: $tgl ?")
-                        .setCancelable(false)
-                        .setPositiveButton("Ya, Hapus") { _, _ ->
-                            hapusJurnal(idJ)
-                        }
-                        .setNegativeButton("Batal", null)
-                        .create()
+            parentFragmentManager.beginTransaction()
+                .add(R.id.overlay_fragment_container, fragment, "UbahJurnal")
+                .addToBackStack(null)
+                .commit()
 
-                    alertDialog.setOnShowListener {
-                        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
-                            .setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_green_dark))
-                        alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
-                            .setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_red_dark))
-                    }
+            requireActivity().findViewById<View>(R.id.overlay_fragment_container).visibility = View.VISIBLE
+            requireActivity().findViewById<View>(R.id.home).visibility = View.GONE
+        })
 
-                    alertDialog.show()
-                }
+        layoutAksi.addView(createActionButton(
+            iconRes = R.drawable.delete,
+            bgColor = 0xFFF44336.toInt()
+        ) {
+            val alertDialog = AlertDialog.Builder(requireContext())
+                .setTitle("Hapus Jurnal")
+                .setMessage("Yakin ingin menghapus jurnal:\n\n$nama\nTanggal: $tgl?")
+                .setCancelable(false)
+                .setPositiveButton("Ya, Hapus") { _, _ -> hapusJurnal(idJ) }
+                .setNegativeButton("Batal", null)
+                .create()
+
+            alertDialog.setOnShowListener {
+                alertDialog.getButton(AlertDialog.BUTTON_POSITIVE)
+                    .setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_green_dark))
+                alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+                    .setTextColor(ContextCompat.getColor(requireContext(), android.R.color.holo_red_dark))
             }
-            layoutAksi.addView(btnH)
-        }
+
+            alertDialog.show()
+        })
 
         row.addView(layoutAksi)
         tableJurnal.addView(row)
     }
-
 
     private fun hapusJurnal(idJurnal: String) {
         val req = object : StringRequest(Method.POST, urlHapusJurnal,

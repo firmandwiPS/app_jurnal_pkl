@@ -1,8 +1,10 @@
 package com.ioreum.app_jurnal_pkl
 
+import android.app.AlertDialog
 import android.app.DownloadManager
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -28,12 +30,12 @@ class laporan_pklFragment : Fragment() {
     private lateinit var btnTambah: Button
     private lateinit var etCari: EditText
 
-    private val urlTampil = "http://172.16.100.11/jurnal_pkl/tampil_laporan.php"
-    private val urlTambah = "http://172.16.100.11/jurnal_pkl/tambah_laporan.php"
-    private val urlHapus = "http://172.16.100.11/jurnal_pkl/hapus_laporan.php"
-    private val urlUbah = "http://172.16.100.11/jurnal_pkl/ubah_laporan.php"
-    private val urlSiswa = "http://172.16.100.11/jurnal_pkl/tampil_siswa.php"
-    private val baseFileUrl = "http://172.16.100.11/jurnal_pkl/uploads/"
+    private val urlTampil = "http://192.168.36.139/jurnal_pkl/tampil_laporan.php"
+    private val urlTambah = "http://192.168.36.139/jurnal_pkl/tambah_laporan.php"
+    private val urlHapus = "http://192.168.36.139/jurnal_pkl/hapus_laporan.php"
+    private val urlUbah = "http://192.168.36.139/jurnal_pkl/ubah_laporan.php"
+    private val urlSiswa = "http://192.168.36.139/jurnal_pkl/tampil_siswa.php"
+    private val baseFileUrl = "http://192.168.36.139/jurnal_pkl/uploads/"
 
     private val siswaList = mutableListOf<Siswa>()
     private lateinit var selectedNis: String
@@ -147,39 +149,63 @@ class laporan_pklFragment : Fragment() {
                             row.addView(tv)
                         }
 
-                        val btnUbah = Button(requireContext()).apply {
-                            text = "Ubah"
-                            textSize = 12f
-                            setOnClickListener {
-                                showUbahBottomSheet(obj)
-                            }
-                        }
-
-                        val btnHapus = Button(requireContext()).apply {
-                            text = "Hapus"
-                            textSize = 12f
-                            setOnClickListener {
-                                val dialog = android.app.AlertDialog.Builder(requireContext())
-                                    .setTitle("Konfirmasi Hapus")
-                                    .setMessage("Yakin ingin menghapus laporan siswa $nama?")
-                                    .setPositiveButton("Ya, Hapus") { _, _ ->
-                                        hapusLaporan(obj.getString("id_laporan_pkl"))
-                                    }
-                                    .setNegativeButton("Tidak", null)
-                                    .create()
-
-                                dialog.setOnShowListener {
-                                    dialog.getButton(android.app.AlertDialog.BUTTON_POSITIVE)?.setTextColor(
-                                        ContextCompat.getColor(requireContext(), android.R.color.holo_green_dark)
-                                    )
-                                    dialog.getButton(android.app.AlertDialog.BUTTON_NEGATIVE)?.setTextColor(
-                                        ContextCompat.getColor(requireContext(), android.R.color.holo_red_dark)
-                                    )
+                        fun createCircleButton(
+                            context: Context,
+                            iconResId: Int,
+                            backgroundColor: Int,
+                            onClick: () -> Unit
+                        ): ImageButton {
+                            val button = ImageButton(context).apply {
+                                setImageResource(iconResId)
+                                background = GradientDrawable().apply {
+                                    shape = GradientDrawable.OVAL
+                                    setColor(backgroundColor)
                                 }
-
-                                dialog.show()
+                                layoutParams = TableRow.LayoutParams(100, 100).apply {
+                                    marginEnd = 12
+                                }
+                                scaleType = ImageView.ScaleType.CENTER_INSIDE
+                                setPadding(16, 16, 16, 16)
+                                setOnClickListener { onClick() }
                             }
+                            return button
                         }
+
+
+                        val btnUbah = createCircleButton(
+                            requireContext(),
+                            R.drawable.edit,
+                            0xFFFFEB3B.toInt()
+                        ) {
+                            showUbahBottomSheet(obj)
+                        }
+
+                        val btnHapus = createCircleButton(
+                            requireContext(),
+                            R.drawable.delete,
+                            0xFFF44336.toInt()
+                        ) {
+                            val dialog = AlertDialog.Builder(requireContext())
+                                .setTitle("Konfirmasi Hapus")
+                                .setMessage("Yakin ingin menghapus laporan siswa ${obj.getString("nama_siswa")}?")
+                                .setPositiveButton("Ya, Hapus") { _, _ ->
+                                    hapusLaporan(obj.getString("id_laporan_pkl"))
+                                }
+                                .setNegativeButton("Tidak", null)
+                                .create()
+
+                            dialog.setOnShowListener {
+                                dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(
+                                    ContextCompat.getColor(requireContext(), android.R.color.holo_green_dark)
+                                )
+                                dialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(
+                                    ContextCompat.getColor(requireContext(), android.R.color.holo_red_dark)
+                                )
+                            }
+
+                            dialog.show()
+                        }
+
 
                         row.addView(btnUbah)
                         row.addView(btnHapus)

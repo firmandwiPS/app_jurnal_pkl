@@ -52,25 +52,31 @@
                     android:inputType="text" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnTambahJurnal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Tambah"
-                android:layout_marginStart="8dp" />
+                android:layout_marginStart="8dp"
+                android:textColor="@android:color/white"
+                app:backgroundTint="@color/green"
+                app:cornerRadius="8dp"
+                app:iconPadding="8dp"/>
+
+
         </LinearLayout>
 
-        <!-- Scroll horizontal untuk tabel -->
+        <!-- HorizontalScrollView untuk scroll horizontal -->
         <HorizontalScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:scrollbars="horizontal">
 
             <TableLayout
                 android:id="@+id/tableJurnal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:stretchColumns="*"
-                android:gravity="center"
                 android:background="@android:color/white"
                 android:elevation="4dp"
                 android:padding="8dp" />

@@ -38,7 +38,7 @@ class HomeFragment : Fragment() {
         "Juli", "Agustus", "September", "Oktober", "November", "Desember"
     )
 
-    private val urlTampilPresensi = "http://172.16.100.11/jurnal_pkl/tampil_presensi.php"
+    private val urlTampilPresensi = "http://192.168.36.139/jurnal_pkl/tampil_presensi.php"
     private var dataPresensiArray = JSONArray()
 
     private var selectedJenis = "Masuk"

@@ -46,26 +46,41 @@
                 android:inputType="text" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnTambahSiswa"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Tambah"
-            android:layout_marginStart="8dp" />
+            android:layout_marginStart="8dp"
+            android:textColor="@android:color/white"
+            app:backgroundTint="@color/green"
+            app:cornerRadius="8dp"
+            app:iconPadding="8dp"/>
+
     </LinearLayout>
 
-    <HorizontalScrollView
+    <!-- ScrollView untuk scroll vertical -->
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:scrollbars="horizontal">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
 
-        <TableLayout
-            android:id="@+id/tableSiswa"
-            android:layout_width="wrap_content"
+        <!-- HorizontalScrollView untuk scroll horizontal -->
+        <HorizontalScrollView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:stretchColumns="*"
-            android:background="@android:color/white"
-            android:elevation="4dp"
-            android:padding="8dp" />
-    </HorizontalScrollView>
+            android:scrollbars="horizontal">
+
+            <TableLayout
+                android:id="@+id/tableSiswa"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:stretchColumns="*"
+                android:background="@android:color/white"
+                android:elevation="4dp"
+                android:padding="8dp" />
+        </HorizontalScrollView>
+    </ScrollView>
+
 </LinearLayout>

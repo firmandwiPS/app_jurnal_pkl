@@ -6,12 +6,19 @@ import java.io.*
 import java.lang.Exception
 import java.nio.charset.Charset
 
+
+
+
+
 open class VolleyMultipartRequest(
     method: Int,
     url: String,
     private val listener: Response.Listener<NetworkResponse>,
     errorListener: Response.ErrorListener
 ) : Request<NetworkResponse>(method, url, errorListener) {
+
+
+
 
     private var mParams: Map<String, String>? = null
     private var mByteData: Map<String, DataPart>? = null
@@ -117,4 +124,7 @@ open class VolleyMultipartRequest(
         private val boundary = "aplikasi-${System.currentTimeMillis()}"
         private const val multipartFormData = "multipart/form-data"
     }
+
+
+
 }
