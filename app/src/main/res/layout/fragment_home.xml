@@ -105,186 +105,199 @@
             android:textSize="20sp"
             android:textStyle="bold" />
 
-        <!-- CardView BBPPMPV BMTI -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardTentang"
+        <HorizontalScrollView
+            android:id="@+id/horizontalScroll"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="16dp"
-            android:background="@android:color/white"
-            android:elevation="2dp"
-            app:cardCornerRadius="12dp"
-            app:cardUseCompatPadding="true">
+            android:layout_marginTop="16dp"
+            android:fillViewport="true"
+            android:scrollbars="none">
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:id="@+id/scrollContainer"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="horizontal">
 
-                <ImageView
-                    android:id="@+id/imageSlideTentang"
-                    android:layout_width="match_parent"
-                    android:layout_height="160dp"
-                    android:contentDescription="Gambar BBPPMPV BMTI"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/gedung" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <!-- CardView: Tentang -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardTentang"
+                    android:layout_width="300dp"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
+                    android:layout_margin="8dp"
+                    android:background="@android:color/white"
+                    android:elevation="4dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardUseCompatPadding="true">
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="BBPPMPV BMTI"
-                        android:textColor="#212121"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
+                        android:orientation="vertical">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="Pusat Pengembangan Guru Vokasi Nasional"
-                        android:textColor="#757575"
-                        android:textSize="14sp" />
+                        <ImageView
+                            android:id="@+id/imageSlideTentang"
+                            android:layout_width="match_parent"
+                            android:layout_height="160dp"
+                            android:scaleType="centerCrop"
+                            android:contentDescription="Gambar BBPPMPV BMTI"
+                            android:src="@drawable/gedung" />
 
-                    <TextView
-                        android:id="@+id/btnLihat1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:paddingTop="4dp"
-                        android:paddingBottom="4dp"
-                        android:text="Lihat Selengkapnya →"
-                        android:textColor="#3F51B5"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
 
-        <!-- Program Unggulan -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardProgram"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:background="@android:color/white"
-            android:elevation="2dp"
-            app:cardCornerRadius="12dp"
-            app:cardUseCompatPadding="true">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="BBPPMPV BMTI"
+                                android:textColor="#212121"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="Pusat Pengembangan Guru Vokasi Nasional"
+                                android:textColor="#757575"
+                                android:textSize="14sp" />
 
-                <ImageView
-                    android:id="@+id/imageSlideProgram"
-                    android:layout_width="match_parent"
-                    android:layout_height="160dp"
-                    android:contentDescription="Pelatihan Guru"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/pelatihan" />
+                            <TextView
+                                android:id="@+id/btnLihat1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:text="Lihat Selengkapnya →"
+                                android:textColor="#3F51B5"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <!-- CardView: Program -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardProgram"
+                    android:layout_width="300dp"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
+                    android:layout_margin="8dp"
+                    android:background="@android:color/white"
+                    android:elevation="4dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardUseCompatPadding="true">
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Program Unggulan"
-                        android:textColor="#212121"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
+                        android:orientation="vertical">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="Pelatihan guru, pengembangan kurikulum, hingga kemitraan industri yang mendorong link and match pendidikan vokasi."
-                        android:textColor="#757575"
-                        android:textSize="14sp" />
+                        <ImageView
+                            android:id="@+id/imageSlideProgram"
+                            android:layout_width="match_parent"
+                            android:layout_height="160dp"
+                            android:scaleType="centerCrop"
+                            android:contentDescription="Program Unggulan"
+                            android:src="@drawable/pelatihan" />
 
-                    <TextView
-                        android:id="@+id/btnLihatProgram"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:text="Lihat Selengkapnya →"
-                        android:textColor="#3F51B5"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
 
-        <!-- Lokasi & Fasilitas -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/cardLokasi"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:background="@android:color/white"
-            android:elevation="2dp"
-            app:cardCornerRadius="12dp"
-            app:cardUseCompatPadding="true">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Program Unggulan"
+                                android:textColor="#212121"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="Pelatihan guru, pengembangan kurikulum, hingga kemitraan industri yang mendorong link and match pendidikan vokasi."
+                                android:textColor="#757575"
+                                android:textSize="14sp" />
 
-                <ImageView
-                    android:id="@+id/imageSlideFasilitas"
-                    android:layout_width="match_parent"
-                    android:layout_height="160dp"
-                    android:background="@drawable/rounded_top_only"
-                    android:contentDescription="Fasilitas BMTI"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/lokasi" />
+                            <TextView
+                                android:id="@+id/btnLihatProgram"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:text="Lihat Selengkapnya →"
+                                android:textColor="#3F51B5"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <!-- CardView: Lokasi -->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cardLokasi"
+                    android:layout_width="300dp"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
+                    android:layout_margin="8dp"
+                    android:background="@android:color/white"
+                    android:elevation="4dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardUseCompatPadding="true">
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Lokasi Dan Fasilitas"
-                        android:textColor="#212121"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
+                        android:orientation="vertical">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="Berlokasi di Cimahi, BBPPMPV BMTI memiliki workshop, ruang kelas modern, dan laboratorium praktik terkini."
-                        android:textColor="#757575"
-                        android:textSize="14sp" />
+                        <ImageView
+                            android:id="@+id/imageSlideFasilitas"
+                            android:layout_width="match_parent"
+                            android:layout_height="160dp"
+                            android:scaleType="centerCrop"
+                            android:contentDescription="Fasilitas"
+                            android:src="@drawable/lokasi" />
 
-                    <TextView
-                        android:id="@+id/btnLihatLokasi"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:text="Lihat Selengkapnya →"
-                        android:textColor="#3F51B5"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Lokasi Dan Fasilitas"
+                                android:textColor="#212121"
+                                android:textSize="16sp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="Berlokasi di Cimahi, memiliki workshop, ruang kelas modern, dan lab praktik terkini."
+                                android:textColor="#757575"
+                                android:textSize="14sp" />
+
+                            <TextView
+                                android:id="@+id/btnLihatLokasi"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:text="Lihat Selengkapnya →"
+                                android:textColor="#3F51B5"
+                                android:textSize="14sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
             </LinearLayout>
-        </androidx.cardview.widget.CardView>
+        </HorizontalScrollView>
 
         <!-- Tentang RPL -->
         <TextView
@@ -297,6 +310,7 @@
 
         <!-- CardView Tentang LKP RPL di Gedung ELITE -->
         <androidx.cardview.widget.CardView
+            android:layout_marginTop="18dp"
             android:id="@+id/cardTentangRPL"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -342,7 +356,9 @@
                         android:id="@+id/textDeskripsiRPL"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="LAB RPL yang terletak di Gedung ELITE BMTI merupakan pusat pelatihan modern yang dirancang untuk membekali peserta dengan keahlian praktis dalam bidang Rekayasa Perangkat Lunak. Dilengkapi fasilitas terkini dan lingkungan belajar yang nyaman."
+                        android:text="
+                        Lab RPL adalah tempat praktik siswa dalam
+                        mengembangkan perangkat lunak secara profesional."
                         android:textColor="#555555"
                         android:textSize="14sp"
                         android:layout_marginTop="8dp" />
@@ -359,10 +375,6 @@
                 </LinearLayout>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
-
-
-
-
 
 
         <!-- Spacer Footer Agar Scroll Bisa Sampai Bawah -->
