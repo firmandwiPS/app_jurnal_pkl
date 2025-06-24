@@ -23,9 +23,11 @@ class UbahSiswaFragment : Fragment() {
     private lateinit var btnSimpan: Button
     private lateinit var btnKembali: ImageButton
 
-    private val urlUbah = "http://192.168.36.139/jurnal_pkl/siswa/ubah_siswa.php"
+    private val urlUbah = "http://172.16.100.11/jurnal_pkl/siswa/ubah_siswa.php"
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View? {
         val view = inflater.inflate(R.layout.fragment_ubah_siswa, container, false)
 
         etNis = view.findViewById(R.id.etNis)
@@ -39,7 +41,6 @@ class UbahSiswaFragment : Fragment() {
         btnSimpan = view.findViewById(R.id.btnSimpan)
         btnKembali = view.findViewById(R.id.btnKembali)
 
-        // Ambil data dari argument
         val bundle = arguments
         val nisLama = bundle?.getString("nis") ?: ""
         etNis.setText(nisLama)
@@ -50,7 +51,6 @@ class UbahSiswaFragment : Fragment() {
         etNoHp.setText(bundle?.getString("no_hp"))
         etAlamat.setText(bundle?.getString("alamat"))
 
-        // Spinner Jenis Kelamin
         val jenisKelaminList = listOf("LAKI-LAKI", "PEREMPUAN")
         val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, jenisKelaminList)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -62,39 +62,15 @@ class UbahSiswaFragment : Fragment() {
             spJenisKelamin.setSelection(selectedIndex)
         }
 
-        // Date picker
         etTanggalMulai.setOnClickListener { showDatePicker(etTanggalMulai) }
         etTanggalSelesai.setOnClickListener { showDatePicker(etTanggalSelesai) }
 
-        // Tombol kembali
         btnKembali.setOnClickListener {
-            parentFragmentManager.popBackStack()
+            closeThisFragment()
         }
 
-        // Simpan
         btnSimpan.setOnClickListener {
-            val request = object : StringRequest(Method.POST, urlUbah, {
-                Toast.makeText(requireContext(), "Data berhasil diubah", Toast.LENGTH_SHORT).show()
-                parentFragmentManager.popBackStack()
-            }, {
-                Toast.makeText(requireContext(), "Gagal mengubah data", Toast.LENGTH_SHORT).show()
-            }) {
-                override fun getParams(): MutableMap<String, String> {
-                    val params = HashMap<String, String>()
-                    params["nis_lama"] = nisLama
-                    params["nis"] = etNis.text.toString()
-                    params["nama_siswa"] = etNama.text.toString()
-                    params["jenis_kelamin"] = spJenisKelamin.selectedItem.toString()
-                    params["asal_sekolah"] = etAsalSekolah.text.toString()
-                    params["tanggal_mulai"] = etTanggalMulai.text.toString()
-                    params["tanggal_selesai"] = etTanggalSelesai.text.toString()
-                    params["no_hp"] = etNoHp.text.toString()
-                    params["alamat"] = etAlamat.text.toString()
-                    return params
-                }
-            }
-
-            Volley.newRequestQueue(requireContext()).add(request)
+            simpanPerubahan(nisLama)
         }
 
         return view
@@ -110,5 +86,59 @@ class UbahSiswaFragment : Fragment() {
             val date = "$y-${String.format("%02d", m + 1)}-${String.format("%02d", d)}"
             editText.setText(date)
         }, year, month, day).show()
+    }
+
+    private fun simpanPerubahan(nisLama: String) {
+        val request = object : StringRequest(Method.POST, urlUbah,
+            { response ->
+                try {
+                    val json = JSONObject(response)
+                    val status = json.getString("status")
+                    val message = json.optString("message", "")
+
+                    if (status == "success") {
+                        Toast.makeText(requireContext(), "✅ Data berhasil diubah", Toast.LENGTH_SHORT).show()
+                        parentFragmentManager.setFragmentResult("refreshSiswa", Bundle())
+                        parentFragmentManager.popBackStack()
+                    } else {
+                        Toast.makeText(requireContext(), "⚠️ $message", Toast.LENGTH_LONG).show()
+                    }
+                } catch (e: Exception) {
+                    Toast.makeText(requireContext(), "❌ Terjadi kesalahan parsing", Toast.LENGTH_SHORT).show()
+                }
+            },
+            {
+                Toast.makeText(requireContext(), "❌ Gagal koneksi: ${it.message}", Toast.LENGTH_LONG).show()
+            }) {
+            override fun getParams(): MutableMap<String, String> {
+                return hashMapOf(
+                    "nis_lama" to nisLama,
+                    "nis" to etNis.text.toString(),
+                    "nama_siswa" to etNama.text.toString(),
+                    "jenis_kelamin" to spJenisKelamin.selectedItem.toString(),
+                    "asal_sekolah" to etAsalSekolah.text.toString(),
+                    "tanggal_mulai" to etTanggalMulai.text.toString(),
+                    "tanggal_selesai" to etTanggalSelesai.text.toString(),
+                    "no_hp" to etNoHp.text.toString(),
+                    "alamat" to etAlamat.text.toString()
+                )
+            }
+        }
+
+        Volley.newRequestQueue(requireContext()).add(request)
+    }
+
+    private fun closeThisFragment() {
+        // Sembunyikan overlay agar tidak menutupi fragment di bawahnya
+        requireActivity().findViewById<View>(R.id.home).visibility = View.VISIBLE
+        requireActivity().findViewById<View>(R.id.overlay_fragment_container).visibility = View.GONE
+        parentFragmentManager.popBackStack()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        // Jaga-jaga jika user tekan tombol back manual
+        requireActivity().findViewById<View>(R.id.home).visibility = View.VISIBLE
+        requireActivity().findViewById<View>(R.id.overlay_fragment_container).visibility = View.GONE
     }
 }

@@ -13,7 +13,24 @@ open class VolleyMultipartRequest(
     errorListener: Response.ErrorListener
 ) : Request<NetworkResponse>(method, url, errorListener) {
 
-    open fun getByteData(): Map<String, DataPart> = hashMapOf()
+    private var mParams: Map<String, String>? = null
+    private var mByteData: Map<String, DataPart>? = null
+
+    open fun getByteData(): Map<String, DataPart> {
+        return mByteData ?: hashMapOf()
+    }
+
+    override fun getParams(): Map<String, String>? {
+        return mParams
+    }
+
+    fun setParams(params: Map<String, String>) {
+        this.mParams = params
+    }
+
+    fun setByteData(byteMap: Map<String, DataPart>) {
+        this.mByteData = byteMap
+    }
 
     override fun getBodyContentType(): String {
         return "$multipartFormData; boundary=$boundary"
@@ -25,7 +42,7 @@ open class VolleyMultipartRequest(
         val dos = DataOutputStream(bos)
 
         try {
-            val params = params
+            val params = getParams()
             if (params != null) {
                 for ((key, data) in params) {
                     buildTextPart(dos, key, data)
@@ -44,7 +61,6 @@ open class VolleyMultipartRequest(
 
         return bos.toByteArray()
     }
-
 
     override fun parseNetworkResponse(response: NetworkResponse?): Response<NetworkResponse> {
         return try {
@@ -99,7 +115,6 @@ open class VolleyMultipartRequest(
 
     companion object {
         private val boundary = "aplikasi-${System.currentTimeMillis()}"
-
         private const val multipartFormData = "multipart/form-data"
     }
 }

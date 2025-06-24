@@ -28,8 +28,8 @@ class TambahJurnalFragment : Fragment() {
     private lateinit var btnKembali: ImageButton
 
 
-    private val urlTambah = "http://192.168.36.139/jurnal_pkl/tambah_jurnal.php"
-    private val urlDaftarSiswa = "http://192.168.36.139/jurnal_pkl/daftar_siswa.php"
+    private val urlTambah = "http://172.16.100.11/jurnal_pkl/tambah_jurnal.php"
+    private val urlDaftarSiswa = "http://172.16.100.11/jurnal_pkl/daftar_siswa.php"
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_tambah_jurnal, container, false)
@@ -45,7 +45,7 @@ class TambahJurnalFragment : Fragment() {
 
         // Tombol kembali
         btnKembali.setOnClickListener {
-            requireActivity().supportFragmentManager.popBackStack()
+            closeThisFragment()
         }
 
         loadNis()
@@ -128,7 +128,8 @@ class TambahJurnalFragment : Fragment() {
             Method.POST, urlTambah,
             { response ->
                 Toast.makeText(requireContext(), "Berhasil disimpan", Toast.LENGTH_SHORT).show()
-                parentFragmentManager.popBackStack()
+                parentFragmentManager.setFragmentResult("refreshJurnal", Bundle())
+                closeThisFragment()
             },
             {
                 Toast.makeText(requireContext(), "Gagal upload", Toast.LENGTH_SHORT).show()
@@ -162,5 +163,19 @@ class TambahJurnalFragment : Fragment() {
             val bitmap = BitmapFactory.decodeStream(inputStream)
             imagePreview.setImageBitmap(bitmap)
         }
+    }
+
+    private fun closeThisFragment() {
+        // Sembunyikan overlay agar tidak menutupi fragment di bawahnya
+        requireActivity().findViewById<View>(R.id.home).visibility = View.VISIBLE
+        requireActivity().findViewById<View>(R.id.overlay_fragment_container).visibility = View.GONE
+        parentFragmentManager.popBackStack()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        // Jaga-jaga jika user tekan tombol back manual
+        requireActivity().findViewById<View>(R.id.home).visibility = View.VISIBLE
+        requireActivity().findViewById<View>(R.id.overlay_fragment_container).visibility = View.GONE
     }
 }

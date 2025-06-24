@@ -1,0 +1,5 @@
+<!-- res/drawable/nav_background_with_touch_block.xml -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="#00000000"/>
+</shape>
