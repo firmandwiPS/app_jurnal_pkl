@@ -2,6 +2,7 @@ package com.ioreum.app_jurnal_pkl
 
 import android.app.AlertDialog
 import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.os.*
 import android.view.*
 import android.view.animation.AnimationUtils
@@ -359,6 +360,7 @@ class HomeFragment : Fragment() {
 
         barChart.setExtraBottomOffset(15f)
         barChart.invalidate()
+        tampilkanRingkasanSemuaJenisPerBulan()
     }
 
     private fun setupChart() {
@@ -441,7 +443,102 @@ class HomeFragment : Fragment() {
 
         barChart.axisRight.isEnabled = false
         barChart.invalidate()
+        tampilkanRingkasanSemuaJenisPerBulan()
     }
+
+    private fun tampilkanRingkasanSemuaJenisPerBulan() {
+        val container = binding.dataList
+        container.removeAllViews()
+
+        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val range = if (selectedRange == "Januari - Juni") 0..5 else 6..11
+
+        val dataPerBulan = mutableMapOf<Int, Int>() // Simpan jumlah berdasarkan jenis filter
+
+        for (i in 0 until dataPresensiArray.length()) {
+            val obj = dataPresensiArray.getJSONObject(i)
+            val tanggal = obj.getString("tanggal")
+            val keterangan = obj.getString("keterangan").lowercase()
+
+            val date = sdf.parse(tanggal)
+            val cal = Calendar.getInstance()
+            cal.time = date!!
+            val bulanIndex = cal.get(Calendar.MONTH)
+
+            if (bulanIndex in range && keterangan == selectedJenis.lowercase()) {
+                dataPerBulan[bulanIndex] = dataPerBulan.getOrDefault(bulanIndex, 0) + 1
+            }
+        }
+
+        for (bulanIndex in range) {
+            val jumlah = dataPerBulan[bulanIndex] ?: 0
+
+            val rowLayout = LinearLayout(requireContext()).apply {
+                orientation = LinearLayout.HORIZONTAL
+                val params = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+                params.setMargins(0, 0, 0, 16) // Jarak antar baris
+                layoutParams = params
+                setPadding(12, 12, 12, 12)
+            }
+
+            // 🔵 Icon bulat warna sesuai filter
+            val circle = View(requireContext()).apply {
+                val size = 24
+                layoutParams = LinearLayout.LayoutParams(size, size).apply {
+                    rightMargin = 16
+                    gravity = Gravity.CENTER_VERTICAL
+                }
+                background = GradientDrawable().apply {
+                    shape = GradientDrawable.OVAL
+                    setColor(
+                        when (selectedJenis.lowercase()) {
+                            "masuk" -> resources.getColor(R.color.green, null)
+                            "izin" -> resources.getColor(R.color.yellow, null)
+                            "alfa" -> resources.getColor(R.color.red, null)
+                            else -> 0xFF9E9E9E.toInt()
+                        }
+                    )
+                }
+            }
+
+            val tvBulan = TextView(requireContext()).apply {
+                text = bulanList[bulanIndex]
+                textSize = 16f
+                setTextColor(0xFF000000.toInt())
+                layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 2f)
+            }
+
+            val tvJumlah = TextView(requireContext()).apply {
+                text = jumlah.toString()  // ⛔ Hanya angka, tanpa label
+                textAlignment = View.TEXT_ALIGNMENT_VIEW_END
+                layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+            }
+
+            rowLayout.addView(circle)
+            rowLayout.addView(tvBulan)
+            rowLayout.addView(tvJumlah)
+
+            container.addView(rowLayout)
+
+            // Tambahkan garis bawah tipis
+            val divider = View(requireContext()).apply {
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    1
+                ).apply {
+                    topMargin = 4
+                    bottomMargin = 12
+                }
+                setBackgroundColor(0xFFCCCCCC.toInt()) // Abu-abu terang
+            }
+
+            container.addView(divider)
+        }
+    }
+
 
     // =====================[FUNGSI INFORMASI]=====================
     private fun getTentangText() = "BBPPMPV BMTI adalah pusat pelatihan pengembangan dan pelatihan vokasi di Indonesia."
