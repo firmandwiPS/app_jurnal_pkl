@@ -60,6 +60,13 @@
             app:iconPadding="8dp"/>
     </LinearLayout>
 
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
     <!-- Tabel -->
     <HorizontalScrollView
         android:layout_width="match_parent"
@@ -77,5 +84,13 @@
 
         </TableLayout>
     </HorizontalScrollView>
+
+    </ScrollView>
+
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="60dp" />
 
 </LinearLayout>

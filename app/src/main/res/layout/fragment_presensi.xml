@@ -80,19 +80,32 @@
     </LinearLayout>
 
 
-    <HorizontalScrollView
+    <!-- ScrollView untuk scroll vertikal seluruh tabel -->
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:scrollbars="horizontal">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
 
-        <TableLayout
-            android:id="@+id/tablePresensi"
-            android:layout_width="wrap_content"
+        <!-- HorizontalScrollView untuk scroll horizontal tabel jika kolom terlalu lebar -->
+        <HorizontalScrollView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:stretchColumns="*"
-            android:background="@android:color/white"
-            android:elevation="4dp"
-            android:padding="8dp" />
-    </HorizontalScrollView>
+            android:scrollbars="horizontal">
+
+            <!-- TableLayout berisi data presensi -->
+            <TableLayout
+                android:id="@+id/tablePresensi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:stretchColumns="*"
+                android:background="@android:color/white"
+                android:elevation="4dp"
+                android:padding="8dp"/>
+        </HorizontalScrollView>
+    </ScrollView>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="60dp" />
 
 </LinearLayout>

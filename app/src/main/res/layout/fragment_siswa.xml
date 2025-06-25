@@ -82,5 +82,8 @@
                 android:padding="8dp" />
         </HorizontalScrollView>
     </ScrollView>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="60dp" />
 
 </LinearLayout>

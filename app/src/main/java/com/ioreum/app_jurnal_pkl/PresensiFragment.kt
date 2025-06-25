@@ -142,10 +142,17 @@ class PresensiFragment : Fragment() {
                 val layoutAksi = LinearLayout(requireContext()).apply {
                     orientation = LinearLayout.HORIZONTAL
                     gravity = Gravity.CENTER
+                    layoutParams = TableRow.LayoutParams(
+                        TableRow.LayoutParams.WRAP_CONTENT,
+                        TableRow.LayoutParams.MATCH_PARENT
+                    ).apply {
+                        gravity = Gravity.CENTER
+                    }
                     setPadding(8, 0, 8, 0)
                 }
 
-                val sizeInDp = 30
+
+                val sizeInDp = 34
                 val density = resources.displayMetrics.density
                 val sizeInPx = (sizeInDp * density).toInt()
 

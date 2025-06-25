@@ -66,6 +66,13 @@
 
         </LinearLayout>
 
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:fillViewport="true">
+
         <!-- HorizontalScrollView untuk scroll horizontal -->
         <HorizontalScrollView
             android:layout_width="match_parent"
@@ -81,6 +88,12 @@
                 android:elevation="4dp"
                 android:padding="8dp" />
         </HorizontalScrollView>
+        </ScrollView>
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="60dp" />
 
     </LinearLayout>
 </ScrollView>
