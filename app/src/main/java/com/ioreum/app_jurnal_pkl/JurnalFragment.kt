@@ -22,8 +22,8 @@ class JurnalFragment : Fragment() {
     private lateinit var etCariJurnal: EditText
     private lateinit var btnTambah: Button
 
-    private val urlTampilJurnal = "http://192.168.36.139/jurnal_pkl/tampil_jurnal.php"
-    private val urlHapusJurnal = "http://192.168.36.139/jurnal_pkl/hapus_jurnal.php"
+    private val urlTampilJurnal = "http://10.20.28.93/jurnal_pkl/tampil_jurnal.php"
+    private val urlHapusJurnal = "http://10.20.28.93/jurnal_pkl/hapus_jurnal.php"
 
     private val originalList = mutableListOf<JSONObject>()
 
@@ -168,7 +168,7 @@ class JurnalFragment : Fragment() {
         }
 
         if (foto.isNotEmpty()) {
-            Glide.with(this).load("http://192.168.36.139/jurnal_pkl/foto/$foto")
+            Glide.with(this).load("http://10.20.28.93/jurnal_pkl/foto/$foto")
                 .placeholder(R.drawable.placeholder)
                 .error(R.drawable.error_image)
                 .into(iv)

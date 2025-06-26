@@ -38,7 +38,7 @@ class HomeFragment : Fragment() {
         "Juli", "Agustus", "September", "Oktober", "November", "Desember"
     )
 
-    private val urlTampilPresensi = "http://192.168.36.139/jurnal_pkl/tampil_presensi.php"
+    private val urlTampilPresensi = "http://10.20.28.93/jurnal_pkl/tampil_presensi.php"
     private var dataPresensiArray = JSONArray()
 
     private var selectedJenis = "Masuk"
@@ -547,9 +547,51 @@ class HomeFragment : Fragment() {
 
 
     // =====================[FUNGSI INFORMASI]=====================
-    private fun getTentangText() = "BBPPMPV BMTI adalah pusat pelatihan pengembangan dan pelatihan vokasi di Indonesia."
-    private fun getProgramText() = "Program unggulan mencakup pelatihan, magang industri, dan pengembangan kompetensi vokasi."
-    private fun getLokasiText() = "BBPPMPV BMTI berlokasi di Cimahi, Jawa Barat dan memiliki fasilitas lengkap untuk pelatihan."
+    private fun getTentangText() = "\uD83C\uDFE2 BBPPMPV BMTI (Balai Besar Pengembangan Penjaminan Mutu Pendidikan Vokasi Mesin dan Teknik Industri) merupakan lembaga di bawah Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi yang fokus pada peningkatan mutu pendidikan vokasi di bidang teknik industri.\n" +
+            "\n" +
+            "\uD83C\uDFAF Misi utama:\n" +
+            "• Meningkatkan kompetensi guru dan tenaga kependidikan vokasi\n" +
+            "• Menyediakan pelatihan berbasis teknologi terkini\n" +
+            "• Menjadi pusat pengembangan kurikulum berbasis industri\n" +
+            "• Menjalin kemitraan dengan dunia industri dan global\n" +
+            "\n" +
+            "\uD83D\uDD2C BBPPMPV BMTI terus berinovasi dalam mendukung transformasi pendidikan vokasi melalui pelatihan, teaching factory, dan program peningkatan kapasitas nasional."
+
+    private fun getProgramText() = "\uD83C\uDF93 PROGRAM UNGGULAN:\n" +
+            "\n" +
+            "\uD83D\uDEE0\uFE0F 1. Pelatihan dan Sertifikasi Guru Vokasi\n" +
+            "Menyediakan pelatihan teknis dan pedagogik bagi guru SMK untuk bidang teknik elektro, otomasi industri, mesin, dan IT.\n" +
+            "\n" +
+            "\uD83C\uDFED 2. Teaching Factory (TEFA)\n" +
+            "Fasilitas simulasi dunia kerja nyata, membekali siswa dengan pengalaman produksi seperti di industri.\n" +
+            "\n" +
+            "\uD83C\uDF10 3. Magang Industri & Kerja Sama Internasional\n" +
+            "Program magang ke industri mitra serta kolaborasi internasional seperti dengan JICA, GIZ, SEAMEO.\n" +
+            "\n" +
+            "\uD83D\uDCDA 4. Pengembangan Kurikulum & Skema Sertifikasi\n" +
+            "Membantu menyusun kurikulum SMK berbasis kebutuhan industri (link and match) dan pengembangan skema LSP.\n" +
+            "\n" +
+            "\uD83E\uDDEA 5. Inovasi & Riset Terapan\n" +
+            "Mendukung guru dan siswa dalam riset vokasi, pembuatan alat peraga, dan prototipe teknologi.\n" +
+            "\n" +
+            "\uD83D\uDD27 6. Pendampingan SMK Center of Excellence (CoE)\n" +
+            "Memberikan pelatihan dan pendampingan intensif untuk SMK binaan di seluruh Indonesia."
+
+    private fun getLokasiText() = "\uD83D\uDCCD Lokasi:\n" +
+            "Jl. Pesantren Km. 2, Cimahi – Jawa Barat, Indonesia.\n" +
+            "Terletak strategis dekat pusat kota dan akses tol Cipularang, hanya 30 menit dari Kota Bandung.\n" +
+            "\n" +
+            "\uD83C\uDFE2 Fasilitas Utama:\n" +
+            "\uD83C\uDFEB • Gedung pelatihan dan ruang kelas multimedia\n" +
+            "\uD83E\uDDEA • Laboratorium teknik elektro, mekatronika, CNC, PLC, otomasi industri\n" +
+            "\uD83C\uDFED • Teaching Factory skala industri\n" +
+            "\uD83D\uDECC • Asrama kapasitas 300 peserta + kantin & laundry\n" +
+            "\uD83D\uDCD6 • Perpustakaan digital & ruang baca\n" +
+            "\uD83D\uDCE1 • Sistem pelatihan berbasis Learning Management System (LMS)\n" +
+            "\uD83C\uDFA4 • Auditorium, ruang seminar, dan studio e-learning\n" +
+            "\uD83D\uDCBB • Pusat IT, jaringan, dan infrastruktur cloud\n" +
+            "\n" +
+            "\uD83C\uDFDE\uFE0F Area sekitar asri dan mendukung proses pembelajaran dengan lingkungan hijau, taman, serta area rekreasi peserta pelatihan."
 
     private fun showAlert(title: String, message: String) {
         val dialog = AlertDialog.Builder(requireContext())

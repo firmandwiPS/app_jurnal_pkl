@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_gradient"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="24dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".Mulai1Fragment">
+
+
+    <!-- App Title -->
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="APLIKASI JURNAL PKL"
+        android:textColor="@color/white"
+        android:textSize="54sp"
+        android:textStyle="bold"
+        android:gravity="center"/>
+
+
+    <!-- App Logo/Image -->
+    <ImageView
+        android:layout_width="217dp"
+        android:layout_height="210dp"
+        android:layout_marginBottom="2dp"
+        android:src="@drawable/mulai1" />
+
+
+
+    <!-- Subtitle -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="6dp"
+        android:text="Lebih mudah untuk mencatat kegiatan PKL"
+        android:textColor="@color/white"
+        android:gravity="center"
+        android:textSize="33sp" />
+
+    <!-- Description -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:gravity="center"
+        android:text="Sekarang kamu bisa mencatat jurnal harian PKL dengan lebih praktis"
+        android:textColor="@color/white"
+        android:textSize="17sp" />
+
+    <!-- Continue Button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnLanjut"
+        android:layout_width="172dp"
+        android:layout_height="wrap_content"
+        android:minWidth="120dp"
+        android:paddingHorizontal="24dp"
+        android:text="Lanjut"
+        android:textAllCaps="false"
+        android:textColor="#4849E0"
+        app:backgroundTint="@color/white"
+        app:cornerRadius="8dp"
+        app:iconPadding="8dp" />
+
+
+
+</LinearLayout>

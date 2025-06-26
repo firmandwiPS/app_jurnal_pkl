@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt">
+
+    <item>
+        <aapt:attr name="android:drawable">
+            <vector xmlns:android="http://schemas.android.com/apk/res/android"
+                android:width="360dp"
+                android:height="640dp"
+                android:viewportWidth="360"
+                android:viewportHeight="640">
+
+                <!-- Blue Background -->
+                <path
+                    android:fillColor="@color/top"
+                    android:pathData="M0,0h360v640h-360z" />
+
+                <!-- Curved Lines -->
+                <!-- Left Side Curved Lines -->
+                <path
+                    android:strokeColor="#80FFFFFF"
+                    android:strokeWidth="2"
+                    android:fillColor="@android:color/transparent"
+                    android:pathData="M10,50 Q90,10 170,50 T330,50" />
+                <path
+                    android:strokeColor="#40FFFFFF"
+                    android:strokeWidth="2"
+                    android:fillColor="@android:color/transparent"
+                    android:pathData="M10,70 Q90,30 170,70 T330,70" />
+                <path
+                    android:strokeColor="#20FFFFFF"
+                    android:strokeWidth="2"
+                    android:fillColor="@android:color/transparent"
+                    android:pathData="M10,90 Q90,50 170,90 T330,90" />
+
+                <!-- Right Side Curved Lines -->
+                <path
+                    android:strokeColor="#80FFFFFF"
+                    android:strokeWidth="2"
+                    android:fillColor="@android:color/transparent"
+                    android:pathData="M350,50 Q270,10 190,50 T30,50" />
+                <path
+                    android:strokeColor="#40FFFFFF"
+                    android:strokeWidth="2"
+                    android:fillColor="@android:color/transparent"
+                    android:pathData="M350,70 Q270,30 190,70 T30,70" />
+                <path
+                    android:strokeColor="#20FFFFFF"
+                    android:strokeWidth="2"
+                    android:fillColor="@android:color/transparent"
+                    android:pathData="M350,90 Q270,50 190,90 T30,90" />
+
+                <!-- Additional Lines for Visual Effect -->
+                <path
+                    android:strokeColor="#10FFFFFF"
+                    android:strokeWidth="2"
+                    android:fillColor="@android:color/transparent"
+                    android:pathData="M10,110 Q90,70 170,110 T330,110" />
+                <path
+                    android:strokeColor="#10FFFFFF"
+                    android:strokeWidth="2"
+                    android:fillColor="@android:color/transparent"
+                    android:pathData="M350,110 Q270,70 190,110 T30,110" />
+
+            </vector>
+        </aapt:attr>
+    </item>
+</selector>

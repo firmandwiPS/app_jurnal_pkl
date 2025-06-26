@@ -28,8 +28,8 @@ class TambahJurnalFragment : Fragment() {
     private lateinit var btnKembali: ImageButton
 
 
-    private val urlTambah = "http://192.168.36.139/jurnal_pkl/tambah_jurnal.php"
-    private val urlDaftarSiswa = "http://192.168.36.139/jurnal_pkl/daftar_siswa.php"
+    private val urlTambah = "http://10.20.28.93/jurnal_pkl/tambah_jurnal.php"
+    private val urlDaftarSiswa = "http://10.20.28.93/jurnal_pkl/daftar_siswa.php"
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_tambah_jurnal, container, false)

@@ -29,11 +29,11 @@ class PresensiFragment : Fragment() {
 
     private val sharedViewModel: SharedPresensiViewModel by activityViewModels()
 
-    private val urlTampil = "http://192.168.36.139/jurnal_pkl/tampil_presensi.php"
-    private val urlTambahPresensi = "http://192.168.36.139/jurnal_pkl/tambah_presensi.php"
-    private val urlUbahPresensi = "http://192.168.36.139/jurnal_pkl/ubah_presensi.php"
-    private val urlGetNis = "http://192.168.36.139/jurnal_pkl/daftar_siswa.php"
-    private val urlHapusPresensi = "http://192.168.36.139/jurnal_pkl/hapus_presensi.php"
+    private val urlTampil = "http://10.20.28.93/jurnal_pkl/tampil_presensi.php"
+    private val urlTambahPresensi = "http://10.20.28.93/jurnal_pkl/tambah_presensi.php"
+    private val urlUbahPresensi = "http://10.20.28.93/jurnal_pkl/ubah_presensi.php"
+    private val urlGetNis = "http://10.20.28.93/jurnal_pkl/daftar_siswa.php"
+    private val urlHapusPresensi = "http://10.20.28.93/jurnal_pkl/hapus_presensi.php"
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_presensi, container, false)

@@ -58,5 +58,6 @@ dependencies {
     implementation ("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")
     implementation ("androidx.work:work-runtime-ktx:2.9.0")
+    implementation ("com.airbnb.android:lottie:6.4.0")
 
 }
